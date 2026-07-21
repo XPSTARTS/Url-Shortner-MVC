@@ -2,27 +2,22 @@
 using MailKit.Net.Smtp;
 using MailKit.Security;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using MimeKit;
 
 namespace UrlShortner.Application.Services;
 
-/// <summary>
-/// Sends emails using MailKit.
-/// Development: Ethereal (fake SMTP)
-/// Production: Brevo, SendGrid, etc.
-/// </summary>
 public class EmailService
 {
     private readonly IConfiguration _configuration;
+    private readonly ILogger<EmailService>? _logger;
 
-    public EmailService(IConfiguration configuration)
+    public EmailService(IConfiguration configuration, ILogger<EmailService>? logger = null)
     {
         _configuration = configuration;
+        _logger = logger;
     }
 
-    /// <summary>
-    /// Sends an OTP verification email.
-    /// </summary>
     public async Task SendOtpEmailAsync(string toEmail, string otp, string purpose)
     {
         var subject = purpose switch
@@ -33,25 +28,79 @@ public class EmailService
         };
 
         var body = $@"
-            <div style='font-family: Arial, sans-serif; max-width: 500px; margin: 0 auto;'>
-                <h2 style='color: #4A90D9;'>URL Shortner</h2>
-                <p>Your verification code is:</p>
-                <h1 style='background: #f5f5f5; padding: 20px; text-align: center; letter-spacing: 10px; font-size: 36px;'>
-                    {otp}
-                </h1>
-                <p>This code will expire in <strong>10 minutes</strong>.</p>
-                <p>If you didn't request this code, please ignore this email.</p>
-                <hr />
-                <small style='color: #999;'>This is an automated message from URL Shortner.</small>
-            </div>";
+<div style='font-family: Arial, sans-serif; max-width: 500px; margin: 0 auto;'>
+    <h2 style='color: #4A90D9;'>URL Shortner</h2>
+    <p>Your verification code is:</p>
+    <h1 style='background: #f5f5f5; padding: 20px; text-align: center; letter-spacing: 10px; font-size: 36px;'>
+        {otp}
+    </h1>
+    <p>This code will expire in <strong>10 minutes</strong>.</p>
+    <p>If you didn't request this code, please ignore this email.</p>
+    <hr />
+    <small style='color: #999;'>This is an automated message from URL Shortner.</small>
+</div>";
 
-        await SendEmailAsync(toEmail, subject, body);
+        // Check if SMTP is configured
+        var smtpHost = _configuration["EmailSettings:SmtpHost"];
+
+        if (string.IsNullOrEmpty(smtpHost))
+        {
+            // DEV MODE: Save OTP to file and log to console
+            await SaveOtpToDevFileAsync(toEmail, otp, purpose, subject);
+            return;
+        }
+
+        // PRODUCTION MODE: Send real email
+        await SendRealEmailAsync(toEmail, subject, body);
     }
 
     /// <summary>
-    /// Core email sending logic.
+    /// Development mode: Save OTP to a file for easy access.
     /// </summary>
-    private async Task SendEmailAsync(string toEmail, string subject, string htmlBody)
+    private async Task SaveOtpToDevFileAsync(string toEmail, string otp, string purpose, string subject)
+    {
+        var devFolder = Path.Combine(Directory.GetCurrentDirectory(), "dev-emails");
+        Directory.CreateDirectory(devFolder);
+
+        var fileName = $"otp-{purpose.ToLower()}-{toEmail.Replace("@", "-at-")}-{DateTime.Now:yyyyMMdd-HHmmss}.txt";
+        var filePath = Path.Combine(devFolder, fileName);
+
+        var content = $@"
+============================================
+EMAIL (DEV MODE - Not actually sent)
+============================================
+To: {toEmail}
+Subject: {subject}
+Purpose: {purpose}
+Date: {DateTime.Now}
+============================================
+
+Your OTP Code: {otp}
+
+============================================
+";
+
+        await File.WriteAllTextAsync(filePath, content);
+
+        // Also print to console in a visible way
+        Console.WriteLine("");
+        Console.WriteLine("╔══════════════════════════════════════════╗");
+        Console.WriteLine("║     📧 DEV MODE - OTP Generated          ║");
+        Console.WriteLine("╠══════════════════════════════════════════╣");
+        Console.WriteLine($"║  To:      {toEmail,-30}║");
+        Console.WriteLine($"║  Purpose: {purpose,-30}║");
+        Console.WriteLine($"║  OTP:     {otp,-30}║");
+        Console.WriteLine($"║  File:    {fileName,-30}║");
+        Console.WriteLine("╚══════════════════════════════════════════╝");
+        Console.WriteLine("");
+
+        _logger?.LogInformation("DEV MODE: OTP for {Email} saved to {FilePath}", toEmail, filePath);
+    }
+
+    /// <summary>
+    /// Production mode: Send email via SMTP.
+    /// </summary>
+    private async Task SendRealEmailAsync(string toEmail, string subject, string htmlBody)
     {
         var emailSettings = _configuration.GetSection("EmailSettings");
 
@@ -71,19 +120,11 @@ public class EmailService
 
         using var client = new SmtpClient();
 
-        var smtpHost = emailSettings["SmtpHost"];
-        if (string.IsNullOrEmpty(smtpHost))
-        {
-            // No SMTP configured - just log for now (development)
-            Console.WriteLine($"📧 Email would be sent to {toEmail}: {subject}");
-            return;
-        }
-
+        var smtpHost = emailSettings["SmtpHost"]!;
         var smtpPort = int.Parse(emailSettings["SmtpPort"] ?? "587");
 
         await client.ConnectAsync(smtpHost, smtpPort, SecureSocketOptions.StartTls);
 
-        // For Ethereal/SMTP, authenticate if credentials provided
         var username = emailSettings["SmtpUsername"];
         var password = emailSettings["SmtpPassword"];
 

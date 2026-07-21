@@ -52,3 +52,18 @@ public class VerifyOtpViewModel
     public string? Password { get; set; } // Only for registration
     public bool RememberMe { get; set; }
 }
+
+// Add to src/UrlShortner.Web/Models/AuthViewModels.cs (at the bottom)
+
+public class ShortenUrlViewModel
+{
+    [Required(ErrorMessage = "Please enter a URL")]
+    [Url(ErrorMessage = "Please enter a valid URL (include http:// or https://)")]
+    [Display(Name = "Long URL")]
+    public string OriginalUrl { get; set; } = string.Empty;
+
+    [StringLength(50, ErrorMessage = "Custom alias must be 50 characters or less")]
+    [RegularExpression(@"^[a-zA-Z0-9\-_]*$", ErrorMessage = "Only letters, numbers, hyphens, and underscores")]
+    [Display(Name = "Custom Alias (optional)")]
+    public string? CustomAlias { get; set; }
+}

@@ -1,0 +1,13 @@
+
+============================================
+EMAIL (DEV MODE - Not actually sent)
+============================================
+To: abdulmoid47628@gmail.com
+Subject: Verify your email - URL Shortner
+Purpose: Register
+Date: 7/21/2026 9:44:54 PM
+============================================
+
+Your OTP Code: 669818
+
+============================================

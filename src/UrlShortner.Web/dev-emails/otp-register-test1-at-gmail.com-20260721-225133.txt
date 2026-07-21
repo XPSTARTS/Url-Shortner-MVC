@@ -1,0 +1,13 @@
+
+============================================
+EMAIL (DEV MODE - Not actually sent)
+============================================
+To: test1@gmail.com
+Subject: Verify your email - URL Shortner
+Purpose: Register
+Date: 7/21/2026 10:51:33 PM
+============================================
+
+Your OTP Code: 224649
+
+============================================

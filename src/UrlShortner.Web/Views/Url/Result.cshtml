@@ -1,0 +1,44 @@
+﻿@{
+    ViewData["Title"] = "URL Shortened!";
+}
+<div class="row justify-content-center mt-5">
+    <div class="col-md-6">
+        <div class="card shadow">
+            <div class="card-body p-4 text-center">
+                <h2 class="text-success mb-4">URL Shortened! 🎉</h2>
+                <div class="mb-4">
+                    <label class="form-label fw-bold">Your Short URL:</label>
+                    <div class="input-group">
+                        <input id="shortUrl" type="text" class="form-control form-control-lg" 
+                               value="@ViewBag.ShortUrl" readonly />
+                        <button class="btn btn-outline-primary" onclick="copyToClipboard()">
+                            📋 Copy
+                        </button>
+                    </div>
+                </div>
+                <p class="text-muted">
+                    Original: <a href="@ViewBag.OriginalUrl" target="_blank">@ViewBag.OriginalUrl</a>
+                </p>
+                <div class="mt-4">
+                    <a asp-action="Create" class="btn btn-primary">Shorten Another</a>
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        <a asp-controller="Dashboard" asp-action="Index" class="btn btn-outline-secondary">
+                            Go to Dashboard
+                        </a>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script>
+        function copyToClipboard() {
+            var copyText = document.getElementById("shortUrl");
+            copyText.select();
+            document.execCommand("copy");
+            alert("Copied to clipboard!");
+        }
+    </script>
+}

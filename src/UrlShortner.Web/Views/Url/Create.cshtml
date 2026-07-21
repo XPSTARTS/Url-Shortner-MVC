@@ -1,0 +1,41 @@
+﻿@model UrlShortner.Web.Models.ShortenUrlViewModel
+@{
+    ViewData["Title"] = "Shorten URL";
+}
+<div class="row justify-content-center mt-5">
+    <div class="col-md-6">
+        <div class="card shadow">
+            <div class="card-body p-4">
+                <h2 class="text-center mb-4">Shorten Your Link</h2>
+                <form asp-action="Create" method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <div class="mb-3">
+                        <label asp-for="OriginalUrl" class="form-label">Long URL</label>
+                        <div class="input-group">
+                            <span class="input-group-text">🔗</span>
+                            <input asp-for="OriginalUrl" class="form-control" 
+                                   placeholder="https://example.com/very/long/url" />
+                        </div>
+                        <span asp-validation-for="OriginalUrl" class="text-danger"></span>
+                    </div>
+                    <div class="mb-4">
+                        <label asp-for="CustomAlias" class="form-label">Custom Alias (optional)</label>
+                        <div class="input-group">
+                            <span class="input-group-text">domain.com/</span>
+                            <input asp-for="CustomAlias" class="form-control" 
+                                   placeholder="my-link" />
+                        </div>
+                        <span asp-validation-for="CustomAlias" class="text-danger"></span>
+                        <small class="text-muted">Leave blank for auto-generated code</small>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100 btn-lg">
+                        Shorten URL
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

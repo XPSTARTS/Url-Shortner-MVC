@@ -1,0 +1,140 @@
+﻿@model List<UrlShortner.Domain.Entities.ShortUrl>
+@{
+    ViewData["Title"] = "Dashboard";
+    var baseUrl = $"{Context.Request.Scheme}://{Context.Request.Host}";
+}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>📊 Dashboard</h1>
+        <div>
+            <a asp-controller="Dashboard" asp-action="Profile" class="btn btn-outline-info me-2">Profile</a>
+            <a asp-controller="Url" asp-action="Create" class="btn btn-primary me-2">Shorten URL</a>
+            <form asp-controller="Auth" asp-action="Logout" method="post" class="d-inline">
+                <button type="submit" class="btn btn-outline-danger">Logout</button>
+            </form>
+        </div>
+    </div>
+
+    @if (TempData["Message"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show">
+            @TempData["Message"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @* Stats Cards *@
+    <div class="row mb-4">
+        <div class="col-md-4 mb-3">
+            <div class="card bg-primary text-white h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Total URLs</h5>
+                    <h2 class="card-text display-6">@ViewBag.TotalUrls</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card bg-success text-white h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Total Clicks</h5>
+                    <h2 class="card-text display-6">@ViewBag.TotalClicks.ToString("N0")</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card bg-info text-white h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Active URLs</h5>
+                    <h2 class="card-text display-6">@ViewBag.ActiveUrls</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @* URLs Table *@
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">My Short URLs</h5>
+        </div>
+        <div class="card-body">
+            @if (Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Short Code</th>
+                                <th>Original URL</th>
+                                <th>Clicks</th>
+                                <th>Created</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var url in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        <a href="@baseUrl/@url.ShortCode" target="_blank" class="fw-bold">
+                                            /@url.ShortCode
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <small class="text-muted" title="@url.OriginalUrl">
+                                            @(url.OriginalUrl.Length > 50 
+                                                ? url.OriginalUrl.Substring(0, 50) + "..." 
+                                                : url.OriginalUrl)
+                                        </small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-secondary">@url.ClickCount.ToString("N0")</span>
+                                    </td>
+                                    <td>
+                                        <small>@url.CreatedAt.ToString("MMM dd, yyyy")</small>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <button class="btn btn-outline-secondary" 
+                                                    onclick="copyToClipboard('@baseUrl/@url.ShortCode')" 
+                                                    title="Copy">
+                                                📋
+                                            </button>
+                                            <form asp-action="Delete" method="post" 
+                                                  onsubmit="return confirm('Delete this URL?');" 
+                                                  class="d-inline">
+                                                <input type="hidden" name="id" value="@url.Id" />
+                                                <button type="submit" class="btn btn-outline-danger" title="Delete">
+                                                    🗑️
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-5">
+                    <h4 class="text-muted">No URLs yet!</h4>
+                    <p>Start by shortening your first URL.</p>
+                    <a asp-controller="Url" asp-action="Create" class="btn btn-primary">
+                        Shorten a URL
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(function() {
+                alert('Copied to clipboard!');
+            });
+        }
+    </script>
+}
