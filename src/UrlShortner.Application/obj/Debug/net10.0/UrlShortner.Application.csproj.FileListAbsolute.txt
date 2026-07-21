@@ -1,0 +1,15 @@
+C:\Learning\URLShortnerMVC\UrlShortner\src\UrlShortner.Application\bin\Debug\net10.0\UrlShortner.Application.deps.json
+C:\Learning\URLShortnerMVC\UrlShortner\src\UrlShortner.Application\bin\Debug\net10.0\UrlShortner.Application.dll
+C:\Learning\URLShortnerMVC\UrlShortner\src\UrlShortner.Application\bin\Debug\net10.0\UrlShortner.Application.pdb
+C:\Learning\URLShortnerMVC\UrlShortner\src\UrlShortner.Application\bin\Debug\net10.0\UrlShortner.Domain.dll
+C:\Learning\URLShortnerMVC\UrlShortner\src\UrlShortner.Application\bin\Debug\net10.0\UrlShortner.Domain.pdb
+C:\Learning\URLShortnerMVC\UrlShortner\src\UrlShortner.Application\obj\Debug\net10.0\UrlShortner.Application.csproj.AssemblyReference.cache
+C:\Learning\URLShortnerMVC\UrlShortner\src\UrlShortner.Application\obj\Debug\net10.0\UrlShortner.Application.GeneratedMSBuildEditorConfig.editorconfig
+C:\Learning\URLShortnerMVC\UrlShortner\src\UrlShortner.Application\obj\Debug\net10.0\UrlShortner.Application.AssemblyInfoInputs.cache
+C:\Learning\URLShortnerMVC\UrlShortner\src\UrlShortner.Application\obj\Debug\net10.0\UrlShortner.Application.AssemblyInfo.cs
+C:\Learning\URLShortnerMVC\UrlShortner\src\UrlShortner.Application\obj\Debug\net10.0\UrlShortner.Application.csproj.CoreCompileInputs.cache
+C:\Learning\URLShortnerMVC\UrlShortner\src\UrlShortner.Application\obj\Debug\net10.0\UrlShort.2D0F6AAD.Up2Date
+C:\Learning\URLShortnerMVC\UrlShortner\src\UrlShortner.Application\obj\Debug\net10.0\UrlShortner.Application.dll
+C:\Learning\URLShortnerMVC\UrlShortner\src\UrlShortner.Application\obj\Debug\net10.0\refint\UrlShortner.Application.dll
+C:\Learning\URLShortnerMVC\UrlShortner\src\UrlShortner.Application\obj\Debug\net10.0\UrlShortner.Application.pdb
+C:\Learning\URLShortnerMVC\UrlShortner\src\UrlShortner.Application\obj\Debug\net10.0\ref\UrlShortner.Application.dll

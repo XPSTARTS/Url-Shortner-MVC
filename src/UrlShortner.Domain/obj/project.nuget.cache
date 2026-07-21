@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "FlY7X+t7k2Y=",
+  "success": true,
+  "projectFilePath": "C:\\Learning\\URLShortnerMVC\\UrlShortner\\src\\UrlShortner.Domain\\UrlShortner.Domain.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\hp\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\10.0.10\\microsoft.extensions.dependencyinjection.abstractions.10.0.10.nupkg.sha512"
+  ],
+  "logs": []
+}

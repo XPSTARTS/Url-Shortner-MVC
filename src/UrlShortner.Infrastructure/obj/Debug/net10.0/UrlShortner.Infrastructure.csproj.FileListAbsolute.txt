@@ -1,0 +1,17 @@
+C:\Learning\URLShortnerMVC\UrlShortner\src\UrlShortner.Infrastructure\bin\Debug\net10.0\UrlShortner.Infrastructure.deps.json
+C:\Learning\URLShortnerMVC\UrlShortner\src\UrlShortner.Infrastructure\bin\Debug\net10.0\UrlShortner.Infrastructure.dll
+C:\Learning\URLShortnerMVC\UrlShortner\src\UrlShortner.Infrastructure\bin\Debug\net10.0\UrlShortner.Infrastructure.pdb
+C:\Learning\URLShortnerMVC\UrlShortner\src\UrlShortner.Infrastructure\bin\Debug\net10.0\UrlShortner.Application.dll
+C:\Learning\URLShortnerMVC\UrlShortner\src\UrlShortner.Infrastructure\bin\Debug\net10.0\UrlShortner.Domain.dll
+C:\Learning\URLShortnerMVC\UrlShortner\src\UrlShortner.Infrastructure\bin\Debug\net10.0\UrlShortner.Application.pdb
+C:\Learning\URLShortnerMVC\UrlShortner\src\UrlShortner.Infrastructure\bin\Debug\net10.0\UrlShortner.Domain.pdb
+C:\Learning\URLShortnerMVC\UrlShortner\src\UrlShortner.Infrastructure\obj\Debug\net10.0\UrlShortner.Infrastructure.csproj.AssemblyReference.cache
+C:\Learning\URLShortnerMVC\UrlShortner\src\UrlShortner.Infrastructure\obj\Debug\net10.0\UrlShortner.Infrastructure.GeneratedMSBuildEditorConfig.editorconfig
+C:\Learning\URLShortnerMVC\UrlShortner\src\UrlShortner.Infrastructure\obj\Debug\net10.0\UrlShortner.Infrastructure.AssemblyInfoInputs.cache
+C:\Learning\URLShortnerMVC\UrlShortner\src\UrlShortner.Infrastructure\obj\Debug\net10.0\UrlShortner.Infrastructure.AssemblyInfo.cs
+C:\Learning\URLShortnerMVC\UrlShortner\src\UrlShortner.Infrastructure\obj\Debug\net10.0\UrlShortner.Infrastructure.csproj.CoreCompileInputs.cache
+C:\Learning\URLShortnerMVC\UrlShortner\src\UrlShortner.Infrastructure\obj\Debug\net10.0\UrlShort.AFE73E73.Up2Date
+C:\Learning\URLShortnerMVC\UrlShortner\src\UrlShortner.Infrastructure\obj\Debug\net10.0\UrlShortner.Infrastructure.dll
+C:\Learning\URLShortnerMVC\UrlShortner\src\UrlShortner.Infrastructure\obj\Debug\net10.0\refint\UrlShortner.Infrastructure.dll
+C:\Learning\URLShortnerMVC\UrlShortner\src\UrlShortner.Infrastructure\obj\Debug\net10.0\UrlShortner.Infrastructure.pdb
+C:\Learning\URLShortnerMVC\UrlShortner\src\UrlShortner.Infrastructure\obj\Debug\net10.0\ref\UrlShortner.Infrastructure.dll
