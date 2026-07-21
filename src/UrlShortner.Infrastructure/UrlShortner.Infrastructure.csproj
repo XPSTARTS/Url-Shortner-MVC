@@ -13,6 +13,11 @@
     <PackageReference Include="StackExchange.Redis" Version="3.0.17" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Email\" />
+    <Folder Include="Authentication\" />
+  </ItemGroup>
+
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>

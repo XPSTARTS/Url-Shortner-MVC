@@ -1,10 +1,12 @@
 {
   "version": 2,
-  "dgSpecHash": "qi5nmaoU5rU=",
+  "dgSpecHash": "nrd2y2Y16cc=",
   "success": true,
   "projectFilePath": "C:\\Learning\\URLShortnerMVC\\UrlShortner\\src\\UrlShortner.Application\\UrlShortner.Application.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\hp\\.nuget\\packages\\bcrypt.net-next\\4.2.0\\bcrypt.net-next.4.2.0.nupkg.sha512",
+    "C:\\Users\\hp\\.nuget\\packages\\bouncycastle.cryptography\\2.6.2\\bouncycastle.cryptography.2.6.2.nupkg.sha512",
+    "C:\\Users\\hp\\.nuget\\packages\\mailkit\\4.17.0\\mailkit.4.17.0.nupkg.sha512",
     "C:\\Users\\hp\\.nuget\\packages\\microsoft.bcl.cryptography\\10.0.2\\microsoft.bcl.cryptography.10.0.2.nupkg.sha512",
     "C:\\Users\\hp\\.nuget\\packages\\microsoft.extensions.configuration.abstractions\\10.0.10\\microsoft.extensions.configuration.abstractions.10.0.10.nupkg.sha512",
     "C:\\Users\\hp\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\10.0.10\\microsoft.extensions.dependencyinjection.abstractions.10.0.10.nupkg.sha512",
@@ -14,7 +16,9 @@
     "C:\\Users\\hp\\.nuget\\packages\\microsoft.identitymodel.jsonwebtokens\\8.19.2\\microsoft.identitymodel.jsonwebtokens.8.19.2.nupkg.sha512",
     "C:\\Users\\hp\\.nuget\\packages\\microsoft.identitymodel.logging\\8.19.2\\microsoft.identitymodel.logging.8.19.2.nupkg.sha512",
     "C:\\Users\\hp\\.nuget\\packages\\microsoft.identitymodel.tokens\\8.19.2\\microsoft.identitymodel.tokens.8.19.2.nupkg.sha512",
-    "C:\\Users\\hp\\.nuget\\packages\\system.identitymodel.tokens.jwt\\8.19.2\\system.identitymodel.tokens.jwt.8.19.2.nupkg.sha512"
+    "C:\\Users\\hp\\.nuget\\packages\\mimekit\\4.17.0\\mimekit.4.17.0.nupkg.sha512",
+    "C:\\Users\\hp\\.nuget\\packages\\system.identitymodel.tokens.jwt\\8.19.2\\system.identitymodel.tokens.jwt.8.19.2.nupkg.sha512",
+    "C:\\Users\\hp\\.nuget\\packages\\system.security.cryptography.pkcs\\10.0.0\\system.security.cryptography.pkcs.10.0.0.nupkg.sha512"
   ],
   "logs": []
 }

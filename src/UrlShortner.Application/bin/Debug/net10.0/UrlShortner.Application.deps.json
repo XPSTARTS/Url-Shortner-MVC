@@ -9,6 +9,7 @@
       "UrlShortner.Application/1.0.0": {
         "dependencies": {
           "BCrypt.Net-Next": "4.2.0",
+          "MailKit": "4.17.0",
           "Microsoft.Extensions.Configuration.Abstractions": "10.0.10",
           "Microsoft.Extensions.Logging.Abstractions": "10.0.10",
           "System.IdentityModel.Tokens.Jwt": "8.19.2",
@@ -23,6 +24,25 @@
           "lib/net10.0/BCrypt-Net-Next.dll": {
             "assemblyVersion": "4.2.0.0",
             "fileVersion": "4.2.0.0"
+          }
+        }
+      },
+      "BouncyCastle.Cryptography/2.6.2": {
+        "runtime": {
+          "lib/net6.0/BouncyCastle.Cryptography.dll": {
+            "assemblyVersion": "2.0.0.0",
+            "fileVersion": "2.6.2.46322"
+          }
+        }
+      },
+      "MailKit/4.17.0": {
+        "dependencies": {
+          "MimeKit": "4.17.0"
+        },
+        "runtime": {
+          "lib/net10.0/MailKit.dll": {
+            "assemblyVersion": "4.17.0.0",
+            "fileVersion": "4.17.0.0"
           }
         }
       },
@@ -115,6 +135,18 @@
           }
         }
       },
+      "MimeKit/4.17.0": {
+        "dependencies": {
+          "BouncyCastle.Cryptography": "2.6.2",
+          "System.Security.Cryptography.Pkcs": "10.0.0"
+        },
+        "runtime": {
+          "lib/net10.0/MimeKit.dll": {
+            "assemblyVersion": "4.17.0.0",
+            "fileVersion": "4.17.0.0"
+          }
+        }
+      },
       "System.IdentityModel.Tokens.Jwt/8.19.2": {
         "dependencies": {
           "Microsoft.IdentityModel.JsonWebTokens": "8.19.2",
@@ -124,6 +156,22 @@
           "lib/net10.0/System.IdentityModel.Tokens.Jwt.dll": {
             "assemblyVersion": "8.19.2.0",
             "fileVersion": "8.19.2.26195"
+          }
+        }
+      },
+      "System.Security.Cryptography.Pkcs/10.0.0": {
+        "runtime": {
+          "lib/net10.0/System.Security.Cryptography.Pkcs.dll": {
+            "assemblyVersion": "10.0.0.0",
+            "fileVersion": "10.0.25.52411"
+          }
+        },
+        "runtimeTargets": {
+          "runtimes/win/lib/net10.0/System.Security.Cryptography.Pkcs.dll": {
+            "rid": "win",
+            "assetType": "runtime",
+            "assemblyVersion": "10.0.0.0",
+            "fileVersion": "10.0.25.52411"
           }
         }
       },
@@ -152,6 +200,20 @@
       "sha512": "sha512-gwLD2KfCuwQesP17aVh4h6lpiMPEVt5Lbpndo0ej903hNUUTtyxt3ARdDjmuydBRTAUICc7OVKVbaOvc6SQYXA==",
       "path": "bcrypt.net-next/4.2.0",
       "hashPath": "bcrypt.net-next.4.2.0.nupkg.sha512"
+    },
+    "BouncyCastle.Cryptography/2.6.2": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-7oWOcvnntmMKNzDLsdxAYqApt+AjpRpP2CShjMfIa3umZ42UQMvH0tl1qAliYPNYO6vTdcGMqnRrCPmsfzTI1w==",
+      "path": "bouncycastle.cryptography/2.6.2",
+      "hashPath": "bouncycastle.cryptography.2.6.2.nupkg.sha512"
+    },
+    "MailKit/4.17.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-1nUAVLxM9fhT/78we6/AGsCesnpn5dRNLLeRqOfr52Wnk87pzVwo5YMTMyqnmoXrYc7piGhmayiMA/OgDluIjg==",
+      "path": "mailkit/4.17.0",
+      "hashPath": "mailkit.4.17.0.nupkg.sha512"
     },
     "Microsoft.Bcl.Cryptography/10.0.2": {
       "type": "package",
@@ -216,12 +278,26 @@
       "path": "microsoft.identitymodel.tokens/8.19.2",
       "hashPath": "microsoft.identitymodel.tokens.8.19.2.nupkg.sha512"
     },
+    "MimeKit/4.17.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-h/KXsCreJf8RpR/PSAtlbvYtZFndp9N8Wn1Bs248AL7ITyhn+AiIY5bLTvt60tbN2mu6g8KadtBNWygTji2lqg==",
+      "path": "mimekit/4.17.0",
+      "hashPath": "mimekit.4.17.0.nupkg.sha512"
+    },
     "System.IdentityModel.Tokens.Jwt/8.19.2": {
       "type": "package",
       "serviceable": true,
       "sha512": "sha512-gqhDC/icByKEutygpr+OFgAmjwTVowyzFjWB8K0q1ww8uFj5a1BQNL+QvijUl9uhq4p8OdDwcAIrjVC+eC9FVA==",
       "path": "system.identitymodel.tokens.jwt/8.19.2",
       "hashPath": "system.identitymodel.tokens.jwt.8.19.2.nupkg.sha512"
+    },
+    "System.Security.Cryptography.Pkcs/10.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-UPWqLSygJlFerRi9XNIuM0a1VC8gHUIufyP24xQ0sc+XimqUAEcjpOz9DhKpyDjH+5B/wO3RpC0KpkEeDj/ddg==",
+      "path": "system.security.cryptography.pkcs/10.0.0",
+      "hashPath": "system.security.cryptography.pkcs.10.0.0.nupkg.sha512"
     },
     "UrlShortner.Domain/1.0.0": {
       "type": "project",
