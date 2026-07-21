@@ -138,10 +138,11 @@ C:\Learning\URLShortnerMVC\UrlShortner\src\UrlShortner.Web\obj\Debug\net10.0\sta
 C:\Learning\URLShortnerMVC\UrlShortner\src\UrlShortner.Web\obj\Debug\net10.0\staticwebassets.development.json
 C:\Learning\URLShortnerMVC\UrlShortner\src\UrlShortner.Web\obj\Debug\net10.0\staticwebassets.build.endpoints.json
 C:\Learning\URLShortnerMVC\UrlShortner\src\UrlShortner.Web\obj\Debug\net10.0\swae.build.ex.cache
-C:\Learning\URLShortnerMVC\UrlShortner\src\UrlShortner.Web\obj\Debug\net10.0\staticwebassets.upToDateCheck.txt
 C:\Learning\URLShortnerMVC\UrlShortner\src\UrlShortner.Web\obj\Debug\net10.0\UrlShort.61BE1DD7.Up2Date
 C:\Learning\URLShortnerMVC\UrlShortner\src\UrlShortner.Web\obj\Debug\net10.0\UrlShortner.Web.dll
 C:\Learning\URLShortnerMVC\UrlShortner\src\UrlShortner.Web\obj\Debug\net10.0\refint\UrlShortner.Web.dll
 C:\Learning\URLShortnerMVC\UrlShortner\src\UrlShortner.Web\obj\Debug\net10.0\UrlShortner.Web.pdb
 C:\Learning\URLShortnerMVC\UrlShortner\src\UrlShortner.Web\obj\Debug\net10.0\UrlShortner.Web.genruntimeconfig.cache
 C:\Learning\URLShortnerMVC\UrlShortner\src\UrlShortner.Web\obj\Debug\net10.0\ref\UrlShortner.Web.dll
+C:\Learning\URLShortnerMVC\UrlShortner\src\UrlShortner.Web\obj\Debug\net10.0\UrlShortner.Web.sourcelink.json
+C:\Learning\URLShortnerMVC\UrlShortner\src\UrlShortner.Web\obj\Debug\net10.0\staticwebassets.upToDateCheck.txt

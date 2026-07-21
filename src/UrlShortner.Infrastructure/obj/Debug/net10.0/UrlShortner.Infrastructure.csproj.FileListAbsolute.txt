@@ -15,3 +15,4 @@ C:\Learning\URLShortnerMVC\UrlShortner\src\UrlShortner.Infrastructure\obj\Debug\
 C:\Learning\URLShortnerMVC\UrlShortner\src\UrlShortner.Infrastructure\obj\Debug\net10.0\refint\UrlShortner.Infrastructure.dll
 C:\Learning\URLShortnerMVC\UrlShortner\src\UrlShortner.Infrastructure\obj\Debug\net10.0\UrlShortner.Infrastructure.pdb
 C:\Learning\URLShortnerMVC\UrlShortner\src\UrlShortner.Infrastructure\obj\Debug\net10.0\ref\UrlShortner.Infrastructure.dll
+C:\Learning\URLShortnerMVC\UrlShortner\src\UrlShortner.Infrastructure\obj\Debug\net10.0\UrlShortner.Infrastructure.sourcelink.json
