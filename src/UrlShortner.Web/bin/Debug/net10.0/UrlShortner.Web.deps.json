@@ -326,6 +326,7 @@
       "UrlShortner.Application/1.0.0": {
         "dependencies": {
           "BCrypt.Net-Next": "4.2.0",
+          "MailKit": "4.17.0",
           "System.IdentityModel.Tokens.Jwt": "8.19.2",
           "UrlShortner.Domain": "1.0.0"
         },

@@ -440,6 +440,7 @@
       "UrlShortner.Application/1.0.0": {
         "dependencies": {
           "BCrypt.Net-Next": "4.2.0",
+          "MailKit": "4.17.0",
           "Microsoft.Extensions.Configuration.Abstractions": "10.0.10",
           "Microsoft.Extensions.Logging.Abstractions": "10.0.10",
           "System.IdentityModel.Tokens.Jwt": "8.19.2",

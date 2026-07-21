@@ -1,0 +1,58 @@
+﻿@* src/UrlShortner.Web/Views/Auth/VerifyOtp.cshtml *@
+@model UrlShortner.Web.Models.VerifyOtpViewModel
+
+@{
+    ViewData["Title"] = "Verify Code";
+    Layout = "_Layout";
+}
+
+<div class="row justify-content-center mt-5">
+    <div class="col-md-5">
+        <div class="card shadow">
+            <div class="card-body p-4">
+                <div class="text-center mb-4">
+                    <h2>📧 Check Your Email</h2>
+                    <p class="text-muted">
+                        We sent a 6-digit verification code to <strong>@Model.Email</strong>
+                    </p>
+                </div>
+
+                @if (ViewBag.Message != null)
+                {
+                    <div class="alert alert-info">@ViewBag.Message</div>
+                }
+
+                <form asp-action="VerifyOtp" method="post">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                    <input type="hidden" asp-for="Email" />
+                    <input type="hidden" asp-for="Purpose" />
+
+                    <div class="mb-4">
+                        <label asp-for="Otp" class="form-label">Verification Code</label>
+                        <input asp-for="Otp"
+                               class="form-control form-control-lg text-center"
+                               placeholder="000000"
+                               maxlength="6"
+                               style="letter-spacing: 10px; font-size: 2rem;" />
+                        <span asp-validation-for="Otp" class="text-danger small"></span>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100 btn-lg">
+                        Verify & Continue
+                    </button>
+                </form>
+
+                <div class="text-center mt-3">
+                    <p class="text-muted small">
+                        Didn't receive the code? Check spam or <a href="#">resend</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
