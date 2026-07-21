@@ -1,24 +1,31 @@
-﻿# .NET
+# Create at root folder
+@'
+# .NET
 bin/
 obj/
 *.user
 *.suo
-*.sln.cache
-
-# Visual Studio
+*.userosscache
+*.sln.docstates
 .vs/
-*.vsidx
 
-# Build outputs
-**/bin/
-**/obj/
+# Development emails
+dev-emails/
 
-# User-specific files
-*.user
-*.rsuser
+# Environment
+appsettings.*.local.json
+*.env
 
-# Logs
-*.log
+# Docker
+docker-compose.override.yml
 
-# Temporary files
-*.tmp
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+'@ | Out-File -FilePath .gitignore -Encoding UTF8
