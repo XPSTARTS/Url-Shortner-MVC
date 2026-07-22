@@ -1,0 +1,13 @@
+
+============================================
+EMAIL (DEV MODE - Not actually sent)
+============================================
+To: abdulmoid47628@gmail.com
+Subject: Your login verification code - URL Shortner
+Purpose: Login
+Date: 7/22/2026 12:01:31 AM
+============================================
+
+Your OTP Code: 869360
+
+============================================

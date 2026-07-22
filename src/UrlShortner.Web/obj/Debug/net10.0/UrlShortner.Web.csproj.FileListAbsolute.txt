@@ -146,3 +146,4 @@ C:\Learning\URLShortnerMVC\UrlShortner\src\UrlShortner.Web\obj\Debug\net10.0\Url
 C:\Learning\URLShortnerMVC\UrlShortner\src\UrlShortner.Web\obj\Debug\net10.0\ref\UrlShortner.Web.dll
 C:\Learning\URLShortnerMVC\UrlShortner\src\UrlShortner.Web\obj\Debug\net10.0\UrlShortner.Web.sourcelink.json
 C:\Learning\URLShortnerMVC\UrlShortner\src\UrlShortner.Web\obj\Debug\net10.0\staticwebassets.upToDateCheck.txt
+C:\Learning\URLShortnerMVC\UrlShortner\src\UrlShortner.Web\bin\Debug\net10.0\appsettings.Production.json

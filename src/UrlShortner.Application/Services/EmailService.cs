@@ -54,9 +54,6 @@ public class EmailService
         await SendRealEmailAsync(toEmail, subject, body);
     }
 
-    /// <summary>
-    /// Development mode: Save OTP to a file for easy access.
-    /// </summary>
     private async Task SaveOtpToDevFileAsync(string toEmail, string otp, string purpose, string subject)
     {
         var devFolder = Path.Combine(Directory.GetCurrentDirectory(), "dev-emails");

@@ -49,7 +49,7 @@ public class OtpService
         var storedHash = await _redisCache.GetOtpAsync(key);
 
         if (string.IsNullOrEmpty(storedHash))
-            return false; // Expired or doesn't exist
+            return false; 
 
         var isValid = VerifyOtpHash(otp, storedHash);
 
