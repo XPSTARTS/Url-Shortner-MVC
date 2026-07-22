@@ -1,8 +1,8 @@
 ﻿@* src/UrlShortner.Web/Views/Auth/VerifyOtp.cshtml *@
 @model UrlShortner.Web.Models.VerifyOtpViewModel
-
 @{
-    ViewData["Title"] = "Verify Code";
+    var isResetPassword = Model.Purpose == "ResetPassword";
+    ViewData["Title"] = isResetPassword ? "Reset Password" : "Verify Code";
     Layout = "_Layout";
 }
 
@@ -10,49 +10,106 @@
     <div class="col-md-5">
         <div class="card shadow">
             <div class="card-body p-4">
-                <div class="text-center mb-4">
-                    <h2>📧 Check Your Email</h2>
-                    <p class="text-muted">
-                        We sent a 6-digit verification code to <strong>@Model.Email</strong>
-                    </p>
-                </div>
+
+                @if (isResetPassword)
+                {
+                    @* RESET PASSWORD HEADER *@
+                    <div class="text-center mb-4">
+                        <div class="mb-3">
+                            <span style="font-size: 3rem;">🔑</span>
+                        </div>
+                        <h2>Reset Your Password</h2>
+                        <p class="text-muted">
+                            We sent a 6-digit reset code to<br />
+                            <strong>@Model.Email</strong>
+                        </p>
+                    </div>
+                }
+                else
+                {
+                    @* REGULAR VERIFICATION HEADER *@
+                    <div class="text-center mb-4">
+                        <h2>📧 Check Your Email</h2>
+                        <p class="text-muted">
+                            We sent a 6-digit verification code to<br />
+                            <strong>@Model.Email</strong>
+                        </p>
+                    </div>
+                }
 
                 @if (ViewBag.Message != null)
                 {
-                    <div class="alert alert-info">@ViewBag.Message</div>
+                    <div class="alert alert-info">
+                        <small>@ViewBag.Message</small>
+                    </div>
                 }
 
                 <form asp-action="VerifyOtp" method="post">
-                    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
                     <input type="hidden" asp-for="Email" />
                     <input type="hidden" asp-for="Purpose" />
 
                     <div class="mb-4">
-                        <label asp-for="Otp" class="form-label">Verification Code</label>
+                        <label asp-for="Otp" class="form-label fw-bold">
+                            @(isResetPassword ? "Reset Code" : "Verification Code")
+                        </label>
                         <input asp-for="Otp"
                                class="form-control form-control-lg text-center"
                                placeholder="000000"
                                maxlength="6"
-                               style="letter-spacing: 10px; font-size: 2rem;" />
+                               autocomplete="one-time-code"
+                               inputmode="numeric"
+                               style="letter-spacing: 12px; font-size: 2rem; font-weight: 600;" />
                         <span asp-validation-for="Otp" class="text-danger small"></span>
                     </div>
 
                     <button type="submit" class="btn btn-primary w-100 btn-lg">
-                        Verify & Continue
+                        @(isResetPassword ? "Verify Reset Code" : "Verify & Continue")
                     </button>
                 </form>
 
-                <div class="text-center mt-3">
-                    <p class="text-muted small">
-                        Didn't receive the code? Check spam or <a href="#">resend</a>
-                    </p>
+                <div class="text-center mt-4">
+                    @if (isResetPassword)
+                    {
+                        <p class="text-muted small mb-0">
+                            Didn't receive the code?
+                            <a asp-action="ForgotPassword">Send again</a>
+                        </p>
+                    }
+                    else
+                    {
+                        <p class="text-muted small mb-0">
+                            Didn't receive the code? Check spam folder.
+                        </p>
+                    }
                 </div>
             </div>
+        </div>
+
+        @* Help text at the bottom *@
+        <div class="text-center mt-3">
+            <p class="text-muted small">
+                @if (isResetPassword)
+                {
+                    <span>🔒 Code expires in 10 minutes for security.</span>
+                }
+                else
+                {
+                    <span>⏰ Code expires in 10 minutes.</span>
+                }
+            </p>
         </div>
     </div>
 </div>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script>
+        // Auto-focus the OTP input
+        document.addEventListener('DOMContentLoaded', function() {
+            var otpInput = document.querySelector('input[asp-for="Otp"]');
+            if (otpInput) otpInput.focus();
+        });
+    </script>
 }

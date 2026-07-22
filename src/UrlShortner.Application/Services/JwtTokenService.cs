@@ -89,8 +89,10 @@ public class JwtTokenService
     /// <summary>
     /// Extracts user ID from a ClaimsPrincipal.
     /// </summary>
-    public int? GetUserId(ClaimsPrincipal principal)
+    public int? GetUserId(ClaimsPrincipal? principal)  
     {
+        if (principal == null) return null;
+
         var claim = principal.FindFirst(ClaimTypes.NameIdentifier);
         if (claim != null && int.TryParse(claim.Value, out var userId))
         {

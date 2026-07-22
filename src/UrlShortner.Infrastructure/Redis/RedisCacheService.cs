@@ -12,8 +12,9 @@ public class RedisCacheService : IRedisCacheService
 
     public RedisCacheService(IConfiguration configuration)
     {
-        var connectionString = configuration.GetConnectionString("Redis")
-            ?? throw new ArgumentNullException("Redis connection string not found");
+        var connectionString = configuration.GetConnectionString("Redis");
+        if (string.IsNullOrEmpty(connectionString))
+            throw new ArgumentNullException(nameof(connectionString), "Redis connection string not found");
 
         _redis = ConnectionMultiplexer.Connect(connectionString);
         _database = _redis.GetDatabase();

@@ -17,14 +17,17 @@ public class AuthService
     private readonly EmailService _emailService;
     private readonly JwtTokenService _jwtTokenService;
     private readonly RefreshTokenService _refreshTokenService;
-
+    private readonly IRefreshTokenRepository _refreshTokenRepository;  // ← ADD THIS
+    private readonly IRedisCacheService _redisCache;                  
     public AuthService(
         IUserRepository userRepository,
         PasswordService passwordService,
         OtpService otpService,
         EmailService emailService,
         JwtTokenService jwtTokenService,
-        RefreshTokenService refreshTokenService)
+        RefreshTokenService refreshTokenService,
+        IRefreshTokenRepository refreshTokenRepository,
+        IRedisCacheService redisCache)                    
     {
         _userRepository = userRepository;
         _passwordService = passwordService;
@@ -32,6 +35,8 @@ public class AuthService
         _emailService = emailService;
         _jwtTokenService = jwtTokenService;
         _refreshTokenService = refreshTokenService;
+        _refreshTokenRepository = refreshTokenRepository;  // ← ADD THIS
+        _redisCache = redisCache;                           
     }
 
     /// <summary>
@@ -160,6 +165,126 @@ public class AuthService
         var newAccessToken = _jwtTokenService.GenerateAccessToken(userId, user.Email);
 
         return AuthResult.Success("Token refreshed.", newAccessToken, newRefreshToken);
+    }
+
+    /// <summary>
+    /// Step 1: Initiates password reset by sending OTP.
+    /// </summary>
+    public async Task<AuthResult> InitiatePasswordResetAsync(string email)
+    {
+        // Check if user exists
+        var user = await _userRepository.GetByEmailAsync(email.ToLower());
+
+        // IMPORTANT: Don't reveal if email exists or not!
+        // Always show the same message to prevent email enumeration
+        if (user == null)
+            return AuthResult.Success("If an account exists with this email, a reset code has been sent.");
+
+        // Check if email is verified
+        if (!user.EmailVerified)
+            return AuthResult.Success("If an account exists with this email, a reset code has been sent.");
+
+        // Generate and send OTP
+        var otp = await _otpService.GenerateOtpAsync(email, OtpPurpose.ResetPassword);
+        await _emailService.SendOtpEmailAsync(email, otp, "ResetPassword");
+
+        return AuthResult.Success("If an account exists with this email, a reset code has been sent.");
+    }
+
+    /// <summary>
+    /// Step 2: Verifies OTP for password reset.
+    /// </summary>
+    // src/UrlShortner.Application/Services/AuthService.cs
+    public async Task<AuthResult> VerifyResetOtpAsync(string email, string otp)
+    {
+        var user = await _userRepository.GetByEmailAsync(email.ToLower());
+        if (user == null)
+            return AuthResult.Failure("Invalid or expired reset code.");
+
+        var otpValid = await _otpService.VerifyOtpAsync(email, otp, OtpPurpose.ResetPassword);
+        if (!otpValid)
+            return AuthResult.Failure("Invalid or expired reset code.");
+
+        // Generate a temporary reset token
+        var resetToken = Guid.NewGuid().ToString("N");
+
+        // Store in Redis with 5-minute expiry
+        await _redisCache.SetRefreshTokenAsync(
+            $"reset:{email.ToLower()}:{resetToken}",
+            "valid",
+            TimeSpan.FromMinutes(5));
+
+        // RETURN THE TOKEN - This is what the controller uses!
+        return AuthResult.Success(
+            "Code verified. You can now reset your password.",
+            resetToken,  // ← This goes into AccessToken field
+            resetToken); // ← This goes into RefreshToken field
+    }
+
+    /// <summary>
+    /// Step 3: Resets the password and revokes all sessions.
+    /// </summary>
+    public async Task<AuthResult> ResetPasswordAsync(string email, string resetToken, string newPassword)
+    {
+        // Validate the reset token
+        var tokenKey = $"reset:{email.ToLower()}:{resetToken}";
+        var tokenValid = await _redisCache.KeyExistsAsync(tokenKey);
+
+        if (!tokenValid)
+            return AuthResult.Failure("Reset link has expired. Please request a new one.");
+
+        // Get user
+        var user = await _userRepository.GetByEmailAsync(email.ToLower());
+        if (user == null)
+            return AuthResult.Failure("User not found.");
+
+        // Validate password strength
+        if (newPassword.Length < 8)
+            return AuthResult.Failure("Password must be at least 8 characters.");
+
+        // Hash new password
+        var newPasswordHash = _passwordService.HashPassword(newPassword);
+
+        // Update password in database
+        await _userRepository.UpdatePasswordAsync(user.Id, newPasswordHash);
+
+        // SECURITY: Revoke ALL refresh tokens (force logout on all devices)
+        await _refreshTokenRepository.RevokeAllUserTokensAsync(user.Id);
+
+        // Delete the reset token
+        await _redisCache.RemoveRefreshTokenAsync(tokenKey);
+
+        // Delete any unused OTPs for this email
+        await _redisCache.RemoveOtpAsync($"otp:resetpassword:{email.ToLower()}");
+
+        return AuthResult.Success("Password has been reset successfully. Please login with your new password.");
+    }
+
+    /// <summary>
+    /// Change password for logged-in user (requires current password).
+    /// </summary>
+    public async Task<AuthResult> ChangePasswordAsync(int userId, string currentPassword, string newPassword)
+    {
+        var user = await _userRepository.GetByIdAsync(userId);
+        if (user == null)
+            return AuthResult.Failure("User not found.");
+
+        // Verify current password
+        if (!_passwordService.VerifyPassword(currentPassword, user.PasswordHash))
+            return AuthResult.Failure("Current password is incorrect.");
+
+        // Validate new password
+        if (newPassword.Length < 8)
+            return AuthResult.Failure("New password must be at least 8 characters.");
+
+        // Hash and update
+        var newHash = _passwordService.HashPassword(newPassword);
+        await _userRepository.UpdatePasswordAsync(user.Id, newHash);
+
+        // Revoke all refresh tokens (force re-login on all devices)
+        await _refreshTokenRepository.RevokeAllUserTokensAsync(user.Id);
+
+        return AuthResult.Success("Password changed successfully. Please login again.");
     }
 
     /// <summary>

@@ -60,6 +60,24 @@ public class UserRepository : IUserRepository
         return id;
     }
 
+    public async Task<bool> UpdatePasswordAsync(int userId, string newPasswordHash)
+    {
+        using var connection = _connectionFactory.CreateConnection();
+
+        const string sql = @"
+        UPDATE Users 
+        SET PasswordHash = @PasswordHash
+        WHERE Id = @Id";
+
+        var rowsAffected = await connection.ExecuteAsync(sql, new
+        {
+            Id = userId,
+            PasswordHash = newPasswordHash
+        });
+
+        return rowsAffected > 0;
+    }
+
     public async Task<bool> UpdateLastLoginAsync(int userId)
     {
         using var connection = _connectionFactory.CreateConnection();

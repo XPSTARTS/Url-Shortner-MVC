@@ -145,11 +145,32 @@ public class AuthController : Controller
                 return View(model);
             }
 
-            // Set cookies
             SetTokenCookies(result.AccessToken!, result.RefreshToken!);
-
             TempData["SuccessMessage"] = "Account created successfully! 🎉";
             return RedirectToAction("Index", "Dashboard");
+        }
+        else if (model.Purpose == "ResetPassword")  // ← CHECK THIS SECTION
+        {
+            var result = await _authService.VerifyResetOtpAsync(model.Email, model.Otp);
+
+            if (!result.IsSuccess)
+            {
+                ModelState.AddModelError(string.Empty, result.Message);
+                // Keep TempData for retry
+                TempData.Keep("Email");
+                TempData.Keep("Purpose");
+                return View(model);
+            }
+
+            // result.RefreshToken contains the reset token
+            // result.Message = "Code verified. You can now reset your password."
+
+            // Redirect to ResetPassword page with email and token
+            return RedirectToAction("ResetPassword", new
+            {
+                email = model.Email,
+                token = result.RefreshToken
+            });
         }
         else // Login
         {
@@ -164,7 +185,6 @@ public class AuthController : Controller
                 return View(model);
             }
 
-            // Set cookies
             SetTokenCookies(result.AccessToken!, result.RefreshToken!);
 
             var returnUrl = TempData["ReturnUrl"] as string;
@@ -173,6 +193,63 @@ public class AuthController : Controller
 
             return RedirectToAction("Index", "Dashboard");
         }
+    }
+
+    [HttpGet]
+    public IActionResult ForgotPassword()
+    {
+        return View();
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
+    {
+        if (!ModelState.IsValid)
+            return View(model);
+
+        var result = await _authService.InitiatePasswordResetAsync(model.Email);
+
+        // Always redirect to OTP page directly
+        TempData["Email"] = model.Email;
+        TempData["Purpose"] = "ResetPassword";
+        TempData["Message"] = result.Message;
+
+        return RedirectToAction("VerifyOtp");
+    }
+
+    [HttpGet]
+    public IActionResult ResetPassword(string email, string token)
+    {
+        if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(token))
+            return RedirectToAction("Login");
+
+        var model = new ResetPasswordViewModel
+        {
+            Email = email,
+            ResetToken = token
+        };
+
+        return View(model);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
+    {
+        if (!ModelState.IsValid)
+            return View(model);
+
+        var result = await _authService.ResetPasswordAsync(
+            model.Email, model.ResetToken, model.NewPassword);
+
+        if (!result.IsSuccess)
+        {
+            ModelState.AddModelError(string.Empty, result.Message);
+            return View(model);
+        }
+
+        // Success - redirect to login with message
+        TempData["SuccessMessage"] = result.Message;
+        return RedirectToAction("Login");
     }
 
     // ============================================

@@ -1,4 +1,5 @@
 ﻿// src/UrlShortner.Application/Common/AuthResult.cs
+
 namespace UrlShortner.Application.Common;
 
 public class AuthResult
