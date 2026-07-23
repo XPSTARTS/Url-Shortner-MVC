@@ -27,7 +27,7 @@ public class UrlValidator
             url = "https://" + url;
         }
 
-        // Validate format
+        // Validate format - MUST have a valid TLD or be a known domain
         if (!Uri.TryCreate(url, UriKind.Absolute, out var uri))
             return (false, "Invalid URL format.", null);
 
@@ -35,9 +35,18 @@ public class UrlValidator
         if (uri.Scheme != "http" && uri.Scheme != "https")
             return (false, "Only HTTP and HTTPS URLs are allowed.", null);
 
-        // Check for blocked domains (prevent shortening our own URLs)
-        var host = uri.Host.ToLower();
-        if (_blockedDomains.Contains(host) || host.EndsWith(".localhost"))
+        // Must have a valid host with at least one dot (domain.tld)
+        var host = uri.Host;
+        if (string.IsNullOrEmpty(host))
+            return (false, "Invalid URL format.", null);
+
+        // Must contain at least one dot (e.g., example.com) OR be localhost
+        if (!host.Contains('.') && host != "localhost")
+            return (false, "Invalid URL format.", null);
+
+        // Check for blocked domains
+        var hostLower = host.ToLower();
+        if (_blockedDomains.Contains(hostLower) || hostLower.EndsWith(".localhost"))
             return (false, "This domain cannot be shortened.", null);
 
         // Max URL length
