@@ -6,6 +6,7 @@
     <Project Path="src/UrlShortner.Web/UrlShortner.Web.csproj" />
   </Folder>
   <Folder Name="/tests/">
+    <Project Path="tests/UrlShortner.IntegrationTests/UrlShortner.IntegrationTests.csproj" />
     <Project Path="tests/UrlShortner.UnitTests/UrlShortner.UnitTests.csproj" />
   </Folder>
 </Solution>
