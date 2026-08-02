@@ -79,6 +79,7 @@ try
     builder.Services.AddScoped<ShortCodeGenerator>();
     builder.Services.AddScoped<UrlValidator>();
     builder.Services.AddScoped<UrlShorteningService>();
+    builder.Services.AddScoped<PasswordValidator>();
 
     var app = builder.Build();
 

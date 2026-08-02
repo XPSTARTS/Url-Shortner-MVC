@@ -17,8 +17,9 @@ public class AuthService
     private readonly EmailService _emailService;
     private readonly JwtTokenService _jwtTokenService;
     private readonly RefreshTokenService _refreshTokenService;
-    private readonly IRefreshTokenRepository _refreshTokenRepository;  // ← ADD THIS
-    private readonly IRedisCacheService _redisCache;                  
+    private readonly IRefreshTokenRepository _refreshTokenRepository;  
+    private readonly IRedisCacheService _redisCache;    
+    private readonly PasswordValidator _passwordValidator;
     public AuthService(
         IUserRepository userRepository,
         PasswordService passwordService,
@@ -27,7 +28,8 @@ public class AuthService
         JwtTokenService jwtTokenService,
         RefreshTokenService refreshTokenService,
         IRefreshTokenRepository refreshTokenRepository,
-        IRedisCacheService redisCache)                    
+        IRedisCacheService redisCache,
+        PasswordValidator passwordValidator)                    
     {
         _userRepository = userRepository;
         _passwordService = passwordService;
@@ -35,8 +37,9 @@ public class AuthService
         _emailService = emailService;
         _jwtTokenService = jwtTokenService;
         _refreshTokenService = refreshTokenService;
-        _refreshTokenRepository = refreshTokenRepository;  // ← ADD THIS
-        _redisCache = redisCache;                           
+        _refreshTokenRepository = refreshTokenRepository; 
+        _redisCache = redisCache;
+        _passwordValidator = passwordValidator;
     }
 
     /// <summary>
@@ -44,19 +47,16 @@ public class AuthService
     /// </summary>
     public async Task<AuthResult> InitiateRegistrationAsync(string email, string password)
     {
-        // Validate email format
         if (!IsValidEmail(email))
             return AuthResult.Failure("Invalid email format.");
 
-        // Check if email already exists
         if (await _userRepository.EmailExistsAsync(email))
             return AuthResult.Failure("Email is already registered.");
 
-        // Validate password strength
-        if (password.Length < 8)
-            return AuthResult.Failure("Password must be at least 8 characters.");
+        var (isValid, error) = _passwordValidator.Validate(password);
+        if (!isValid)
+            return AuthResult.Failure(error!);
 
-        // Generate and send OTP
         var otp = await _otpService.GenerateOtpAsync(email, OtpPurpose.Register);
         await _emailService.SendOtpEmailAsync(email, otp, "Register");
 
@@ -226,35 +226,25 @@ public class AuthService
     /// </summary>
     public async Task<AuthResult> ResetPasswordAsync(string email, string resetToken, string newPassword)
     {
-        // Validate the reset token
         var tokenKey = $"reset:{email.ToLower()}:{resetToken}";
         var tokenValid = await _redisCache.KeyExistsAsync(tokenKey);
 
         if (!tokenValid)
             return AuthResult.Failure("Reset link has expired. Please request a new one.");
 
-        // Get user
         var user = await _userRepository.GetByEmailAsync(email.ToLower());
         if (user == null)
             return AuthResult.Failure("User not found.");
 
-        // Validate password strength
-        if (newPassword.Length < 8)
-            return AuthResult.Failure("Password must be at least 8 characters.");
+        // 🔑 NEW: Strong password validation
+        var (isValid, error) = _passwordValidator.Validate(newPassword);
+        if (!isValid)
+            return AuthResult.Failure(error!);
 
-        // Hash new password
         var newPasswordHash = _passwordService.HashPassword(newPassword);
-
-        // Update password in database
         await _userRepository.UpdatePasswordAsync(user.Id, newPasswordHash);
-
-        // SECURITY: Revoke ALL refresh tokens (force logout on all devices)
         await _refreshTokenRepository.RevokeAllUserTokensAsync(user.Id);
-
-        // Delete the reset token
         await _redisCache.RemoveRefreshTokenAsync(tokenKey);
-
-        // Delete any unused OTPs for this email
         await _redisCache.RemoveOtpAsync($"otp:resetpassword:{email.ToLower()}");
 
         return AuthResult.Success("Password has been reset successfully. Please login with your new password.");

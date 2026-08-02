@@ -27,13 +27,35 @@
                         <span asp-validation-for="Email" class="text-danger small"></span>
                     </div>
 
+                    
                     <div class="mb-3">
                         <label asp-for="Password" class="form-label">Password</label>
                         <div class="input-group">
                             <span class="input-group-text">🔒</span>
-                            <input asp-for="Password" class="form-control" placeholder="Min. 8 characters" />
+                            <input asp-for="Password" id="passwordInput" class="form-control"
+                                   placeholder="Min. 8 characters"
+                                   oninput="checkPasswordStrength()" />
                         </div>
-                        <span asp-validation-for="Password" class="text-danger small"></span>
+
+                        @* Password strength meter *@
+                        <div class="mt-2">
+                            <div class="progress" style="height: 6px;">
+                                <div id="strengthBar" class="progress-bar bg-danger"
+                                     style="width: 0%;"></div>
+                            </div>
+                            <small id="strengthText" class="text-muted mt-1"></small>
+                        </div>
+
+                        @* Password requirements checklist *@
+                        <div class="mt-2 small">
+                            <div id="req-length" class="text-danger">✗ At least 8 characters</div>
+                            <div id="req-upper" class="text-danger">✗ One uppercase letter</div>
+                            <div id="req-lower" class="text-danger">✗ One lowercase letter</div>
+                            <div id="req-number" class="text-danger">✗ One number</div>
+                            <div id="req-special" class="text-danger">✗ One special character</div>
+                        </div>
+
+                        <span asp-validation-for="Password" class="text-danger"></span>
                     </div>
 
                     <div class="mb-4">
@@ -60,4 +82,62 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script>
+        function checkPasswordStrength() {
+            var password = document.getElementById('passwordInput').value;
+
+            // Check requirements
+            var hasLength = password.length >= 8;
+            var hasUpper = /[A-Z]/.test(password);
+            var hasLower = /[a-z]/.test(password);
+            var hasNumber = /[0-9]/.test(password);
+            var hasSpecial = /[^a-zA-Z0-9]/.test(password);
+
+            // Update checklist
+            updateRequirement('req-length', hasLength);
+            updateRequirement('req-upper', hasUpper);
+            updateRequirement('req-lower', hasLower);
+            updateRequirement('req-number', hasNumber);
+            updateRequirement('req-special', hasSpecial);
+
+            // Calculate strength
+            var strength = 0;
+            if (hasLength) strength += 20;
+            if (password.length >= 12) strength += 10;
+            if (hasUpper) strength += 20;
+            if (hasLower) strength += 20;
+            if (hasNumber) strength += 15;
+            if (hasSpecial) strength += 15;
+
+            // Update bar
+            var bar = document.getElementById('strengthBar');
+            var text = document.getElementById('strengthText');
+            bar.style.width = strength + '%';
+
+            if (strength <= 25) {
+                bar.className = 'progress-bar bg-danger';
+                text.textContent = 'Weak';
+            } else if (strength <= 50) {
+                bar.className = 'progress-bar bg-warning';
+                text.textContent = 'Fair';
+            } else if (strength <= 75) {
+                bar.className = 'progress-bar bg-info';
+                text.textContent = 'Good';
+            } else {
+                bar.className = 'progress-bar bg-success';
+                text.textContent = 'Strong!';
+            }
+        }
+
+        function updateRequirement(id, isValid) {
+            var el = document.getElementById(id);
+            if (isValid) {
+                el.innerHTML = '✓ ' + el.innerHTML.substring(2);
+                el.className = 'text-success';
+            } else {
+                el.innerHTML = '✗ ' + el.innerHTML.substring(2);
+                el.className = 'text-danger';
+            }
+        }
+    </script>
 }
