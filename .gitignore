@@ -25,5 +25,8 @@ obj/
 d e v - e m a i l s / 
  
 logs/
+
+.env
+env
  
- 
+appsettings.Production.json
