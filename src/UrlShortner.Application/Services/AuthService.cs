@@ -20,6 +20,8 @@ public class AuthService
     private readonly IRefreshTokenRepository _refreshTokenRepository;  
     private readonly IRedisCacheService _redisCache;    
     private readonly PasswordValidator _passwordValidator;
+    private readonly AccountLockoutService _lockoutService;
+
     public AuthService(
         IUserRepository userRepository,
         PasswordService passwordService,
@@ -29,7 +31,8 @@ public class AuthService
         RefreshTokenService refreshTokenService,
         IRefreshTokenRepository refreshTokenRepository,
         IRedisCacheService redisCache,
-        PasswordValidator passwordValidator)                    
+        PasswordValidator passwordValidator,
+        AccountLockoutService lockoutService)
     {
         _userRepository = userRepository;
         _passwordService = passwordService;
@@ -40,6 +43,7 @@ public class AuthService
         _refreshTokenRepository = refreshTokenRepository; 
         _redisCache = redisCache;
         _passwordValidator = passwordValidator;
+        _lockoutService = lockoutService;
     }
 
     /// <summary>
@@ -96,20 +100,22 @@ public class AuthService
     /// </summary>
     public async Task<AuthResult> InitiateLoginAsync(string email, string password)
     {
-        // Find user
+        if (await _lockoutService.IsLockedAsync(email))
+        {
+            var minutes = await _lockoutService.GetRemainingLockoutMinutesAsync(email);
+            return AuthResult.Failure($"Account is locked. Try again in {minutes} minutes.");
+        }
+
         var user = await _userRepository.GetByEmailAsync(email.ToLower());
         if (user == null)
             return AuthResult.Failure("Invalid email or password.");
 
-        // Verify password
         if (!_passwordService.VerifyPassword(password, user.PasswordHash))
             return AuthResult.Failure("Invalid email or password.");
 
-        // Check if email is verified
         if (!user.EmailVerified)
             return AuthResult.Failure("Email not verified. Please register again.");
 
-        // Generate and send OTP for 2FA
         var otp = await _otpService.GenerateOtpAsync(email, OtpPurpose.Login);
         await _emailService.SendOtpEmailAsync(email, otp, "Login");
 
@@ -121,20 +127,32 @@ public class AuthService
     /// </summary>
     public async Task<AuthResult> CompleteLoginAsync(string email, string otp, string? ipAddress = null, string? deviceInfo = null)
     {
-        // Verify OTP
+        // 🔑 Check if account is locked
+        if (await _lockoutService.IsLockedAsync(email))
+        {
+            return AuthResult.Failure("Account is locked. Please try again later.");
+        }
+
         var otpValid = await _otpService.VerifyOtpAsync(email, otp, OtpPurpose.Login);
         if (!otpValid)
-            return AuthResult.Failure("Invalid or expired verification code.");
+        {
+            // 🔑 Record failed attempt
+            var isLocked = await _lockoutService.RecordFailedAttemptAsync(email);
+            if (isLocked)
+                return AuthResult.Failure("Account locked due to too many failed attempts. Try again in 15 minutes.");
 
-        // Get user
+            return AuthResult.Failure("Invalid or expired verification code.");
+        }
+
+        // 🔑 Reset attempts on success
+        await _lockoutService.ResetAttemptsAsync(email);
+
         var user = await _userRepository.GetByEmailAsync(email.ToLower());
         if (user == null)
             return AuthResult.Failure("User not found.");
 
-        // Update last login
         await _userRepository.UpdateLastLoginAsync(user.Id);
 
-        // Generate tokens
         var accessToken = _jwtTokenService.GenerateAccessToken(user.Id, email);
         var refreshToken = await _refreshTokenService.GenerateRefreshTokenAsync(user.Id, ipAddress, deviceInfo);
 

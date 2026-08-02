@@ -80,6 +80,7 @@ try
     builder.Services.AddScoped<UrlValidator>();
     builder.Services.AddScoped<UrlShorteningService>();
     builder.Services.AddScoped<PasswordValidator>();
+    builder.Services.AddScoped<AccountLockoutService>();
 
     var app = builder.Build();
 
