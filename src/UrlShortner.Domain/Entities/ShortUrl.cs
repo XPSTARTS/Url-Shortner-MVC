@@ -10,6 +10,7 @@ public class ShortUrl
     public DateTime CreatedAt { get; set; }
     public long ClickCount { get; set; }
     public bool IsActive { get; set; } = true;
+    public DateTime? ExpiresAt { get; set; }
 
     // Navigation properties (not used by Dapper, but good for documentation)
     public User? User { get; set; }

@@ -20,7 +20,7 @@ public class ShortUrlRepository : IShortUrlRepository
         using var connection = _connectionFactory.CreateConnection();
 
         const string sql = @"
-            SELECT Id, UserId, OriginalUrl, ShortCode, CreatedAt, ClickCount, IsActive
+            SELECT Id, UserId, OriginalUrl, ShortCode, CreatedAt, ClickCount, IsActive, ExpiresAt
             FROM ShortUrls
             WHERE ShortCode = @ShortCode AND IsActive = 1";
 
@@ -32,7 +32,7 @@ public class ShortUrlRepository : IShortUrlRepository
         using var connection = _connectionFactory.CreateConnection();
 
         const string sql = @"
-            SELECT Id, UserId, OriginalUrl, ShortCode, CreatedAt, ClickCount, IsActive
+            SELECT Id, UserId, OriginalUrl, ShortCode, CreatedAt, ClickCount, IsActive, ExpiresAt
             FROM ShortUrls
             WHERE UserId = @UserId AND IsActive = 1
             ORDER BY CreatedAt DESC";
@@ -45,9 +45,9 @@ public class ShortUrlRepository : IShortUrlRepository
         using var connection = _connectionFactory.CreateConnection();
 
         const string sql = @"
-            INSERT INTO ShortUrls (UserId, OriginalUrl, ShortCode, CreatedAt, ClickCount, IsActive)
-            VALUES (@UserId, @OriginalUrl, @ShortCode, @CreatedAt, @ClickCount, @IsActive);
-            
+            INSERT INTO ShortUrls (UserId, OriginalUrl, ShortCode, CreatedAt, ClickCount, IsActive, ExpiresAt)
+            VALUES (@UserId, @OriginalUrl, @ShortCode, @CreatedAt, @ClickCount, @IsActive, @ExpiresAt);
+
             SELECT CAST(SCOPE_IDENTITY() as int);";
 
         return await connection.QuerySingleAsync<int>(sql, shortUrl);
@@ -58,7 +58,7 @@ public class ShortUrlRepository : IShortUrlRepository
         using var connection = _connectionFactory.CreateConnection();
 
         const string sql = @"
-            UPDATE ShortUrls 
+            UPDATE ShortUrls
             SET OriginalUrl = @OriginalUrl, ShortCode = @ShortCode
             WHERE Id = @Id AND IsActive = 1";
 

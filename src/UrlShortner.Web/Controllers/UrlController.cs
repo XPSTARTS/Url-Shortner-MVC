@@ -1,5 +1,4 @@
-﻿// src/UrlShortner.Web/Controllers/UrlController.cs
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using UrlShortner.Application.DTOs;
 using UrlShortner.Application.Services;
 using UrlShortner.Web.Models;
@@ -9,10 +8,12 @@ namespace UrlShortner.Web.Controllers;
 public class UrlController : Controller
 {
     private readonly UrlShorteningService _urlShorteningService;
+    private readonly QrCodeService _qrCodeService;
 
-    public UrlController(UrlShorteningService urlShorteningService)
+    public UrlController(UrlShorteningService urlShorteningService, QrCodeService qrCodeService)
     {
         _urlShorteningService = urlShorteningService;
+        _qrCodeService = qrCodeService;
     }
 
     [HttpGet]
@@ -27,7 +28,6 @@ public class UrlController : Controller
         if (!ModelState.IsValid)
             return View(model);
 
-        // Get user ID if logged in
         int? userId = null;
         if (User.Identity?.IsAuthenticated == true)
         {
@@ -42,7 +42,8 @@ public class UrlController : Controller
         {
             OriginalUrl = model.OriginalUrl,
             CustomAlias = model.CustomAlias,
-            UserId = userId
+            UserId = userId,
+            ExpiryDays = model.ExpiryDays  
         };
 
         var baseUrl = $"{Request.Scheme}://{Request.Host}";
@@ -54,7 +55,6 @@ public class UrlController : Controller
             return View(model);
         }
 
-        // Store result in TempData to show on result page
         TempData["ShortUrl"] = result.ShortUrl;
         TempData["OriginalUrl"] = result.OriginalUrl;
         TempData["ShortCode"] = result.ShortCode;
@@ -75,6 +75,7 @@ public class UrlController : Controller
         ViewBag.ShortUrl = shortUrl;
         ViewBag.OriginalUrl = originalUrl;
         ViewBag.ShortCode = shortCode;
+        ViewBag.QrCode = _qrCodeService.GenerateQrCodeBase64(shortUrl);
 
         return View();
     }

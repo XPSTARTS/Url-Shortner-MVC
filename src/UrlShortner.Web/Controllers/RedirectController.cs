@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using UrlShortner.Application.Services;
 using UrlShortner.Domain.Entities;
 using UrlShortner.Domain.Interfaces;
+using UrlShortner.Infrastructure.Data;
+using UrlShortner.Infrastructure.Repositories;  
 
 namespace UrlShortner.Web.Controllers;
 
@@ -10,22 +12,21 @@ public class RedirectController : Controller
 {
     private readonly UrlShorteningService _urlShorteningService;
     private readonly IClickLogRepository _clickLogRepository;
+    private readonly IShortUrlRepository _shortUrlRepository;  
 
     public RedirectController(
         UrlShorteningService urlShorteningService,
-        IClickLogRepository clickLogRepository)
+        IClickLogRepository clickLogRepository,
+        IShortUrlRepository shortUrlRepository)  
     {
         _urlShorteningService = urlShorteningService;
         _clickLogRepository = clickLogRepository;
+        _shortUrlRepository = shortUrlRepository;  
     }
 
     [HttpGet]
     public async Task<IActionResult> Index(string shortCode)
     {
-        if (string.IsNullOrEmpty(shortCode))
-            return RedirectToAction("Index", "Home");
-
-        // Skip reserved paths
         if (IsReservedPath(shortCode))
             return NotFound();
 
@@ -34,14 +35,21 @@ public class RedirectController : Controller
         if (originalUrl == null)
             return NotFound();
 
-        // Record click
+        // 🔑 Check if URL is expired
+        var url = await _shortUrlRepository.GetByCodeAsync(shortCode);
+        if (url?.ExpiresAt != null && url.ExpiresAt < DateTime.UtcNow)
+        {
+            return NotFound();
+        }
+
+        // Record click and redirect
         _ = Task.Run(async () =>
         {
             try
             {
                 var clickLog = new ClickLog
                 {
-                    ShortUrlId = 0,
+                    ShortUrlId = url?.Id ?? 0,
                     ClickedAt = DateTime.UtcNow,
                     IPAddress = HttpContext.Connection.RemoteIpAddress?.ToString(),
                     UserAgent = Request.Headers["User-Agent"].ToString(),

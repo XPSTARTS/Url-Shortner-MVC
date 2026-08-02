@@ -9,14 +9,16 @@ public class ShortenUrlResponse
     public string? ShortUrl { get; set; }
     public string? OriginalUrl { get; set; }
 
-    public static ShortenUrlResponse Success(string shortCode, string shortUrl, string originalUrl)
+    public DateTime? ExpiresAt { get; set; }
+    public static ShortenUrlResponse Success(string shortCode, string shortUrl, string originalUrl, DateTime? expiresAt = null)
     {
         return new ShortenUrlResponse
         {
             IsSuccess = true,
             ShortCode = shortCode,
             ShortUrl = shortUrl,
-            OriginalUrl = originalUrl
+            OriginalUrl = originalUrl,
+            ExpiresAt = expiresAt
         };
     }
 

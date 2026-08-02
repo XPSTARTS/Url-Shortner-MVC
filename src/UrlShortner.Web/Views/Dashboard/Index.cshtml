@@ -68,6 +68,7 @@
                                 <th>Clicks</th>
                                 <th>Created</th>
                                 <th>Actions</th>
+                                <th>Expires</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -108,6 +109,11 @@
                                                 </button>
                                             </form>
                                         </div>
+                                    </td>
+                                    <td>
+                                        @(url.ExpiresAt.HasValue
+                                            ? url.ExpiresAt.Value.ToString("MMM dd, yyyy")
+                                            : "Never")
                                     </td>
                                 </tr>
                             }

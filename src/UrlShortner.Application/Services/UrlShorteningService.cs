@@ -79,17 +79,20 @@ public class UrlShorteningService
             IsActive = true
         };
 
-        // Step 4: Save to database
-        var id = await _shortUrlRepository.CreateAsync(shortUrl);
+        if (request.ExpiryDays.HasValue && request.ExpiryDays.Value > 0)
+        {
+            shortUrl.ExpiresAt = DateTime.UtcNow.AddDays(request.ExpiryDays.Value);
+        }
 
-        // Step 5: Cache in Redis for fast redirects
+        var id = await _shortUrlRepository.CreateAsync(shortUrl);  // ← SAVES with ExpiresAt!
+
+        // Cache in Redis
         await _redisCache.SetUrlAsync(shortCode, normalizedUrl!, TimeSpan.FromHours(24));
 
         _logger?.LogInformation("URL shortened: {ShortCode} -> {OriginalUrl}", shortCode, normalizedUrl);
 
-        // Step 6: Return response
         var shortUrl_full = $"{baseUrl.TrimEnd('/')}/{shortCode}";
-        return ShortenUrlResponse.Success(shortCode, shortUrl_full, normalizedUrl!);
+        return ShortenUrlResponse.Success(shortCode, shortUrl_full, normalizedUrl!, shortUrl.ExpiresAt);
     }
 
     /// <summary>

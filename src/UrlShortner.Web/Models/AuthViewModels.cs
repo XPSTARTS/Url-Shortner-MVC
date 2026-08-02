@@ -95,4 +95,7 @@ public class ShortenUrlViewModel
     [RegularExpression(@"^[a-zA-Z0-9\-_]*$", ErrorMessage = "Only letters, numbers, hyphens, and underscores")]
     [Display(Name = "Custom Alias (optional)")]
     public string? CustomAlias { get; set; }
+
+    [Display(Name = "Expires In")]
+    public int? ExpiryDays { get; set; }  
 }

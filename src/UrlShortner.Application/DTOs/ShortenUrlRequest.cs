@@ -6,4 +6,5 @@ public class ShortenUrlRequest
     public string OriginalUrl { get; set; } = string.Empty;
     public string? CustomAlias { get; set; }
     public int? UserId { get; set; } // Null for anonymous
+    public int? ExpiryDays { get; set; } // 1, 7, 30, or null = never
 }

@@ -81,6 +81,7 @@ try
     builder.Services.AddScoped<UrlShorteningService>();
     builder.Services.AddScoped<PasswordValidator>();
     builder.Services.AddScoped<AccountLockoutService>();
+    builder.Services.AddScoped<QrCodeService>();
 
     var app = builder.Build();
 
