@@ -36,10 +36,15 @@ public class UrlShorteningService
     /// </summary>
     public async Task<ShortenUrlResponse> ShortenUrlAsync(ShortenUrlRequest request, string baseUrl)
     {
-        // Step 1: Validate the URL
         var (isValid, error, normalizedUrl) = _urlValidator.ValidateUrl(request.OriginalUrl);
         if (!isValid)
             return ShortenUrlResponse.Failure(error!);
+
+        if (normalizedUrl!.StartsWith("javascript:", StringComparison.OrdinalIgnoreCase) ||
+            normalizedUrl.StartsWith("data:", StringComparison.OrdinalIgnoreCase))
+        {
+            return ShortenUrlResponse.Failure("Invalid URL protocol.");
+        }
 
         // Step 2: Determine short code
         string shortCode;

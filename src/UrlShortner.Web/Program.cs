@@ -106,6 +106,7 @@ try
     app.UseRateLimiting();
     app.UseJwtCookieAuthentication();
     app.UseAuthorization();
+    app.UseInputSanitization();
 
     // ============================================
     // ROUTES
