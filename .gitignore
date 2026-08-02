@@ -14,19 +14,19 @@ obj/
 **/obj/
 
 # User-specific files
-*.user
 *.rsuser
 
 # Logs
 *.log
+logs/
 
 # Temporary files
 *.tmp
-d e v - e m a i l s / 
- 
-logs/
+dev-emails/
 
+# Env files
 .env
 env
- 
+
+# Production config (ignore untracked)
 appsettings.Production.json
