@@ -1,13 +1,21 @@
 // src/UrlShortner.Web/Controllers/HomeController.cs
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 namespace UrlShortner.Web.Controllers;
 
 public class HomeController : Controller
 {
+    private readonly ILogger<HomeController> _logger;
+
+    public HomeController(ILogger<HomeController> logger)
+    {
+        _logger = logger;
+    }
+
     public IActionResult Index()
     {
-        // If user is logged in, show shorten form with their context
+        _logger.LogInformation("Home page visited");
         return View();
     }
 

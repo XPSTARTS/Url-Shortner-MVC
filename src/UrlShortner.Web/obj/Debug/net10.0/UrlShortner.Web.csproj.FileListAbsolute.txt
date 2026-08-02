@@ -147,3 +147,13 @@ C:\Learning\URLShortnerMVC\UrlShortner\src\UrlShortner.Web\obj\Debug\net10.0\ref
 C:\Learning\URLShortnerMVC\UrlShortner\src\UrlShortner.Web\obj\Debug\net10.0\UrlShortner.Web.sourcelink.json
 C:\Learning\URLShortnerMVC\UrlShortner\src\UrlShortner.Web\obj\Debug\net10.0\staticwebassets.upToDateCheck.txt
 C:\Learning\URLShortnerMVC\UrlShortner\src\UrlShortner.Web\bin\Debug\net10.0\appsettings.Production.json
+C:\Learning\URLShortnerMVC\UrlShortner\src\UrlShortner.Web\bin\Debug\net10.0\Microsoft.Extensions.DependencyModel.dll
+C:\Learning\URLShortnerMVC\UrlShortner\src\UrlShortner.Web\bin\Debug\net10.0\Serilog.dll
+C:\Learning\URLShortnerMVC\UrlShortner\src\UrlShortner.Web\bin\Debug\net10.0\Serilog.AspNetCore.dll
+C:\Learning\URLShortnerMVC\UrlShortner\src\UrlShortner.Web\bin\Debug\net10.0\Serilog.Extensions.Hosting.dll
+C:\Learning\URLShortnerMVC\UrlShortner\src\UrlShortner.Web\bin\Debug\net10.0\Serilog.Extensions.Logging.dll
+C:\Learning\URLShortnerMVC\UrlShortner\src\UrlShortner.Web\bin\Debug\net10.0\Serilog.Formatting.Compact.dll
+C:\Learning\URLShortnerMVC\UrlShortner\src\UrlShortner.Web\bin\Debug\net10.0\Serilog.Settings.Configuration.dll
+C:\Learning\URLShortnerMVC\UrlShortner\src\UrlShortner.Web\bin\Debug\net10.0\Serilog.Sinks.Console.dll
+C:\Learning\URLShortnerMVC\UrlShortner\src\UrlShortner.Web\bin\Debug\net10.0\Serilog.Sinks.Debug.dll
+C:\Learning\URLShortnerMVC\UrlShortner\src\UrlShortner.Web\bin\Debug\net10.0\Serilog.Sinks.File.dll

@@ -4,10 +4,29 @@ using UrlShortner.Infrastructure.Redis;
 using UrlShortner.Infrastructure.Repositories;
 using UrlShortner.Application.Services;
 using UrlShortner.Web.Middleware;
+using Serilog;  
 
-var builder = WebApplication.CreateBuilder(args);
+// ============================================
+// SERILOG CONFIGURATION
+// ============================================
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Debug()
+    .WriteTo.Console(outputTemplate:
+        "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}")
+    .WriteTo.File("logs/urlshortner-.txt",
+        rollingInterval: RollingInterval.Day,
+        outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} [{Level:u3}] {Message:lj}{NewLine}{Exception}")
+    .CreateLogger();
 
-builder.Services.AddControllersWithViews();
+try
+{
+    Log.Information("Starting URL Shortner application");
+
+    var builder = WebApplication.CreateBuilder(args);
+
+    builder.Host.UseSerilog();
+
+    builder.Services.AddControllersWithViews();
 
 // Infrastructure
 builder.Services.AddSingleton<DbConnectionFactory>();
@@ -30,28 +49,33 @@ builder.Services.AddScoped<UrlShorteningService>();
 
 var app = builder.Build();
 
-// Error handling
-app.UseStatusCodePagesWithReExecute("/Home/Error", "?statusCode={0}");
+// ============================================
+// ERROR HANDLING (ORDER MATTERS!)
+// ============================================
+
+app.UseGlobalExceptionHandler();
+
+app.UseStatusCodePagesWithReExecute("/Error/{0}");
 
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }
-
-app.UseGlobalExceptionHandler();
-app.UseStatusCodePagesWithReExecute("/Error/{0}");
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 
-// Middleware
+// ============================================
+// CUSTOM MIDDLEWARE
+// ============================================
 app.UseRateLimiting();
 app.UseJwtCookieAuthentication();
 app.UseAuthorization();
 
-// Routes - SPECIFIC FIRST, CATCH-ALL LAST
+// ============================================
+// ROUTES
+// ============================================
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
@@ -62,4 +86,13 @@ app.MapControllerRoute(
     defaults: new { controller = "Redirect", action = "Index" },
     constraints: new { shortCode = @"^[a-zA-Z0-9\-_]{1,50}$" });
 
-app.Run();
+    app.Run();
+}
+catch (Exception ex)
+{
+    Log.Fatal(ex, "Application terminated unexpectedly");
+}
+finally
+{
+    Log.CloseAndFlush();
+}
