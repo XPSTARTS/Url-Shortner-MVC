@@ -24,7 +24,7 @@ public class ShortUrlRepository : IShortUrlRepository
         using var connection = _connectionFactory.CreateConnection();
         var pg = IsPostgres(connection);
         var sql = pg
-            ? @"SELECT ""Id"", ""UserId"", ""OriginalUrl"", ""ShortCode"", ""CreatedAt"", ""ClickCount"", ""IsActive"", ""ExpiresAt"" FROM ""ShortUrls"" WHERE ""ShortCode"" = @ShortCode AND ""IsActive"" = 1"
+            ? @"SELECT ""Id"", ""UserId"", ""OriginalUrl"", ""ShortCode"", ""CreatedAt"", ""ClickCount"", ""IsActive"", ""ExpiresAt"" FROM ""ShortUrls"" WHERE ""ShortCode"" = @ShortCode AND ""IsActive"" = TRUE"
             : @"SELECT Id, UserId, OriginalUrl, ShortCode, CreatedAt, ClickCount, IsActive, ExpiresAt FROM ShortUrls WHERE ShortCode = @ShortCode AND IsActive = 1";
 
         return await connection.QuerySingleOrDefaultAsync<ShortUrl>(sql, new { ShortCode = shortCode });
@@ -35,7 +35,7 @@ public class ShortUrlRepository : IShortUrlRepository
         using var connection = _connectionFactory.CreateConnection();
         var pg = IsPostgres(connection);
         var sql = pg
-            ? @"SELECT ""Id"", ""UserId"", ""OriginalUrl"", ""ShortCode"", ""CreatedAt"", ""ClickCount"", ""IsActive"", ""ExpiresAt"" FROM ""ShortUrls"" WHERE ""UserId"" = @UserId AND ""IsActive"" = 1 ORDER BY ""CreatedAt"" DESC"
+            ? @"SELECT ""Id"", ""UserId"", ""OriginalUrl"", ""ShortCode"", ""CreatedAt"", ""ClickCount"", ""IsActive"", ""ExpiresAt"" FROM ""ShortUrls"" WHERE ""UserId"" = @UserId AND ""IsActive"" = TRUE ORDER BY ""CreatedAt"" DESC"
             : @"SELECT Id, UserId, OriginalUrl, ShortCode, CreatedAt, ClickCount, IsActive, ExpiresAt FROM ShortUrls WHERE UserId = @UserId AND IsActive = 1 ORDER BY CreatedAt DESC";
 
         return await connection.QueryAsync<ShortUrl>(sql, new { UserId = userId });
@@ -57,7 +57,7 @@ public class ShortUrlRepository : IShortUrlRepository
         using var connection = _connectionFactory.CreateConnection();
         var pg = IsPostgres(connection);
         var sql = pg
-            ? @"UPDATE ""ShortUrls"" SET ""OriginalUrl"" = @OriginalUrl, ""ShortCode"" = @ShortCode WHERE ""Id"" = @Id AND ""IsActive"" = 1"
+            ? @"UPDATE ""ShortUrls"" SET ""OriginalUrl"" = @OriginalUrl, ""ShortCode"" = @ShortCode WHERE ""Id"" = @Id AND ""IsActive"" = TRUE"
             : @"UPDATE ShortUrls SET OriginalUrl = @OriginalUrl, ShortCode = @ShortCode WHERE Id = @Id AND IsActive = 1";
 
         var rows = await connection.ExecuteAsync(sql, shortUrl);
@@ -69,7 +69,7 @@ public class ShortUrlRepository : IShortUrlRepository
         using var connection = _connectionFactory.CreateConnection();
         var pg = IsPostgres(connection);
         var sql = pg
-            ? @"UPDATE ""ShortUrls"" SET ""IsActive"" = 0 WHERE ""Id"" = @Id"
+            ? @"UPDATE ""ShortUrls"" SET ""IsActive"" = FALSE WHERE ""Id"" = @Id"
             : @"UPDATE ShortUrls SET IsActive = 0 WHERE Id = @Id";
 
         var rows = await connection.ExecuteAsync(sql, new { Id = id });
