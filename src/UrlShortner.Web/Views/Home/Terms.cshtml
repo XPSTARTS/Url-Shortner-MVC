@@ -1,0 +1,41 @@
+﻿@{
+    ViewData["Title"] = "Terms of Service";
+}
+
+<div class="container page-enter">
+    <div class="row justify-content-center mt-4">
+        <div class="col-lg-8">
+            <a asp-action="Index" class="btn btn-outline-secondary btn-sm mb-3 back-btn">← Back</a>
+
+            <div class="card">
+                <div class="card-body p-4">
+                    <h1 style="font-weight: 700; font-size: 1.8rem; margin-bottom: 0.5rem;">Terms of Service</h1>
+                    <p class="text-muted" style="font-size: 0.85rem;">Last updated: @DateTime.Now.ToString("MMMM dd, yyyy")</p>
+
+                    <div class="policy-content">
+                        <h3>1. Acceptance of Terms</h3>
+                        <p>By using URL Shortner, you agree to these terms. If you do not agree, please do not use the service.</p>
+
+                        <h3>2. Service Description</h3>
+                        <p>URL Shortner provides a platform to create shortened URLs. We reserve the right to modify or discontinue the service at any time.</p>
+
+                        <h3>3. User Responsibilities</h3>
+                        <p>You agree not to use the service to shorten URLs that link to illegal content, malware, phishing sites, spam, or any content that violates applicable laws. We reserve the right to remove any shortened URL without notice.</p>
+
+                        <h3>4. Account Security</h3>
+                        <p>You are responsible for maintaining the confidentiality of your account credentials. We use two-factor authentication to protect accounts, but you must also practice good security habits.</p>
+
+                        <h3>5. Rate Limits</h3>
+                        <p>Anonymous users are limited to 5 URL creations per hour. Registered users have higher limits. Automated usage or abuse will result in account suspension.</p>
+
+                        <h3>6. Limitation of Liability</h3>
+                        <p>URL Shortner is provided "as is" without warranties of any kind. We are not liable for any damages arising from the use of our service.</p>
+
+                        <h3>7. Changes to Terms</h3>
+                        <p>We may update these terms at any time. Continued use of the service after changes constitutes acceptance of the new terms.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

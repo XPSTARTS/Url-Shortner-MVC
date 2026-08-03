@@ -1,6 +1,38 @@
 ﻿@{
     ViewData["Title"] = "Privacy Policy";
 }
-<h1>@ViewData["Title"]</h1>
 
-<p>Use this page to detail your site's privacy policy.</p>
+<div class="container page-enter">
+    <div class="row justify-content-center mt-4">
+        <div class="col-lg-8">
+            <a asp-action="Index" class="btn btn-outline-secondary btn-sm mb-3 back-btn">← Back</a>
+
+            <div class="card">
+                <div class="card-body p-4">
+                    <h1 style="font-weight: 700; font-size: 1.8rem; margin-bottom: 0.5rem;">Privacy Policy</h1>
+                    <p class="text-muted" style="font-size: 0.85rem;">Last updated: @DateTime.Now.ToString("MMMM dd, yyyy")</p>
+
+                    <div class="policy-content">
+                        <h3>1. Information We Collect</h3>
+                        <p>We collect only the information necessary to provide our URL shortening service. This includes your email address (when you create an account), shortened URLs you create, and basic analytics data such as click counts and referrer information.</p>
+
+                        <h3>2. How We Use Your Information</h3>
+                        <p>Your email is used solely for account authentication and communication. URL analytics help us improve the service and provide you with click statistics. We never sell or share your personal data with third parties.</p>
+
+                        <h3>3. Data Storage & Security</h3>
+                        <p>All data is stored securely using industry-standard encryption. Passwords are hashed using BCrypt. Authentication uses JWT tokens with refresh rotation. We employ Redis-based rate limiting to protect against abuse.</p>
+
+                        <h3>4. Cookies</h3>
+                        <p>We use HTTP-only secure cookies for authentication. These cookies are not accessible by JavaScript and are automatically sent with each request. No tracking cookies or third-party cookies are used.</p>
+
+                        <h3>5. Data Retention</h3>
+                        <p>Shortened URLs remain active until you delete them or they expire based on your chosen expiry period. You can delete your account data by contacting us.</p>
+
+                        <h3>6. Contact</h3>
+                        <p>If you have questions about this privacy policy, please contact us at abdulmoid47628@gmail.com.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

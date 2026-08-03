@@ -19,6 +19,16 @@ public class HomeController : Controller
         return View();
     }
 
+    public IActionResult Privacy()
+    {
+        return View();
+    }
+
+    public IActionResult Terms()
+    {
+        return View();
+    }
+
     [HttpGet("/Home/Error")]
     public IActionResult Error(int statusCode)
     {

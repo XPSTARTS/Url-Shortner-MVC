@@ -47,8 +47,46 @@
     </main>
 
     <footer class="footer">
-        <div class="container text-center">
-            &copy; @DateTime.Now.Year - URL Shortner
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <h5 class="footer-brand">Shortner</h5>
+                    <p class="footer-desc">Transform long URLs into clean, trackable short links. Fast, secure, and free.</p>
+                </div>
+                <div class="col-md-2">
+                    <h6 class="footer-heading">Product</h6>
+                    <ul class="footer-links">
+                        <li><a asp-controller="Home" asp-action="Index">Home</a></li>
+                        <li><a asp-controller="Url" asp-action="Create">Shorten URL</a></li>
+                        <li><a asp-controller="Dashboard" asp-action="Index">Dashboard</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-2">
+                    <h6 class="footer-heading">Account</h6>
+                    <ul class="footer-links">
+                        <li><a asp-controller="Auth" asp-action="Login">Sign In</a></li>
+                        <li><a asp-controller="Auth" asp-action="Register">Register</a></li>
+                        <li><a asp-controller="Dashboard" asp-action="Profile">Profile</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-2">
+                    <h6 class="footer-heading">Legal</h6>
+                    <ul class="footer-links">
+                        <li><a asp-action="Privacy">Privacy Policy</a></li>
+                        <li><a asp-action="Terms">Terms of Service</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-2">
+                    <h6 class="footer-heading">Links</h6>
+                    <ul class="footer-links">
+                        <li><a href="/swagger" target="_blank">API Docs</a></li>
+                        <li><a href="https://github.com/XPSTARTS/Url-Shortner-MVC" target="_blank">GitHub</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; @DateTime.Now.Year Shortner. All rights reserved.</p>
+            </div>
         </div>
     </footer>
 
