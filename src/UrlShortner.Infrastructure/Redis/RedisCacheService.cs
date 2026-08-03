@@ -17,8 +17,7 @@ public class RedisCacheService : IRedisCacheService
 
         var options = ConfigurationOptions.Parse(connectionString);
         options.AbortOnConnectFail = false;
-        options.ConnectTimeout = 10000;
-        options.SyncTimeout = 10000;
+        options.ConnectTimeout = 15000;
 
         _redis = ConnectionMultiplexer.Connect(options);
         _database = _redis.GetDatabase();
