@@ -11,12 +11,7 @@ using UrlShortner.Web.Middleware;
 // SERILOG CONFIGURATION
 // ============================================
 Log.Logger = new LoggerConfiguration()
-    .MinimumLevel.Debug()
-    .WriteTo.Console(outputTemplate:
-        "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}")
-    .WriteTo.File("logs/urlshortner-.txt",
-        rollingInterval: RollingInterval.Day,
-        outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} [{Level:u3}] {Message:lj}{NewLine}{Exception}")
+    .ReadFrom.Configuration(new ConfigurationBuilder().AddJsonFile("appsettings.json").Build()) // ← Reads from config
     .CreateLogger();
 
 try
@@ -29,8 +24,9 @@ try
 
     var builder = WebApplication.CreateBuilder(args);
 
-    // 🔑 Add Serilog
-    builder.Host.UseSerilog();
+    // 🔑 Add Serilog - reads from appsettings.{Environment}.json automatically
+    builder.Host.UseSerilog((context, config) =>
+        config.ReadFrom.Configuration(context.Configuration));
 
     // 🔑 Override settings with environment variables
     builder.Configuration
