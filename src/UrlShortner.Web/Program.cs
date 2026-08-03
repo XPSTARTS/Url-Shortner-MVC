@@ -28,14 +28,13 @@ try
         .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true)
         .AddEnvironmentVariables();
 
-    var dbPassword = Environment.GetEnvironmentVariable("DB_PASSWORD");
+    var dbConnection = Environment.GetEnvironmentVariable("DB_CONNECTION");
     var redisConn = Environment.GetEnvironmentVariable("REDIS_CONNECTION");
     var jwtSecret = Environment.GetEnvironmentVariable("JWT_SECRET_KEY");
 
-    if (!string.IsNullOrEmpty(dbPassword))
+    if (!string.IsNullOrEmpty(dbConnection))
     {
-        builder.Configuration["ConnectionStrings:DefaultConnection"] =
-            $"Server=localhost,1433;Database=UrlShortnerDb;User Id=sa;Password={dbPassword};TrustServerCertificate=True;Encrypt=False;";
+        builder.Configuration["ConnectionStrings:DefaultConnection"] = dbConnection;
     }
 
     if (!string.IsNullOrEmpty(redisConn))

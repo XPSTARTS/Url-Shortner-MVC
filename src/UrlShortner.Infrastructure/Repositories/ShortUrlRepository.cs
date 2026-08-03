@@ -1,5 +1,7 @@
 ﻿// src/UrlShortner.Infrastructure/Repositories/ShortUrlRepository.cs
 using Dapper;
+using Npgsql;
+using System.Data;
 using UrlShortner.Domain.Entities;
 using UrlShortner.Domain.Interfaces;
 using UrlShortner.Infrastructure.Data;
@@ -15,14 +17,15 @@ public class ShortUrlRepository : IShortUrlRepository
         _connectionFactory = connectionFactory;
     }
 
+    private bool IsPostgres(IDbConnection connection) => connection is NpgsqlConnection;
+
     public async Task<ShortUrl?> GetByCodeAsync(string shortCode)
     {
         using var connection = _connectionFactory.CreateConnection();
-
-        const string sql = @"
-            SELECT Id, UserId, OriginalUrl, ShortCode, CreatedAt, ClickCount, IsActive, ExpiresAt
-            FROM ShortUrls
-            WHERE ShortCode = @ShortCode AND IsActive = 1";
+        var pg = IsPostgres(connection);
+        var sql = pg
+            ? @"SELECT ""Id"", ""UserId"", ""OriginalUrl"", ""ShortCode"", ""CreatedAt"", ""ClickCount"", ""IsActive"", ""ExpiresAt"" FROM ""ShortUrls"" WHERE ""ShortCode"" = @ShortCode AND ""IsActive"" = 1"
+            : @"SELECT Id, UserId, OriginalUrl, ShortCode, CreatedAt, ClickCount, IsActive, ExpiresAt FROM ShortUrls WHERE ShortCode = @ShortCode AND IsActive = 1";
 
         return await connection.QuerySingleOrDefaultAsync<ShortUrl>(sql, new { ShortCode = shortCode });
     }
@@ -30,12 +33,10 @@ public class ShortUrlRepository : IShortUrlRepository
     public async Task<IEnumerable<ShortUrl>> GetByUserIdAsync(int userId)
     {
         using var connection = _connectionFactory.CreateConnection();
-
-        const string sql = @"
-            SELECT Id, UserId, OriginalUrl, ShortCode, CreatedAt, ClickCount, IsActive, ExpiresAt
-            FROM ShortUrls
-            WHERE UserId = @UserId AND IsActive = 1
-            ORDER BY CreatedAt DESC";
+        var pg = IsPostgres(connection);
+        var sql = pg
+            ? @"SELECT ""Id"", ""UserId"", ""OriginalUrl"", ""ShortCode"", ""CreatedAt"", ""ClickCount"", ""IsActive"", ""ExpiresAt"" FROM ""ShortUrls"" WHERE ""UserId"" = @UserId AND ""IsActive"" = 1 ORDER BY ""CreatedAt"" DESC"
+            : @"SELECT Id, UserId, OriginalUrl, ShortCode, CreatedAt, ClickCount, IsActive, ExpiresAt FROM ShortUrls WHERE UserId = @UserId AND IsActive = 1 ORDER BY CreatedAt DESC";
 
         return await connection.QueryAsync<ShortUrl>(sql, new { UserId = userId });
     }
@@ -43,12 +44,10 @@ public class ShortUrlRepository : IShortUrlRepository
     public async Task<int> CreateAsync(ShortUrl shortUrl)
     {
         using var connection = _connectionFactory.CreateConnection();
-
-        const string sql = @"
-            INSERT INTO ShortUrls (UserId, OriginalUrl, ShortCode, CreatedAt, ClickCount, IsActive, ExpiresAt)
-            VALUES (@UserId, @OriginalUrl, @ShortCode, @CreatedAt, @ClickCount, @IsActive, @ExpiresAt);
-
-            SELECT CAST(SCOPE_IDENTITY() as int);";
+        var pg = IsPostgres(connection);
+        var sql = pg
+            ? @"INSERT INTO ""ShortUrls"" (""UserId"", ""OriginalUrl"", ""ShortCode"", ""CreatedAt"", ""ClickCount"", ""IsActive"", ""ExpiresAt"") VALUES (@UserId, @OriginalUrl, @ShortCode, @CreatedAt, @ClickCount, @IsActive, @ExpiresAt) RETURNING ""Id"";"
+            : @"INSERT INTO ShortUrls (UserId, OriginalUrl, ShortCode, CreatedAt, ClickCount, IsActive, ExpiresAt) VALUES (@UserId, @OriginalUrl, @ShortCode, @CreatedAt, @ClickCount, @IsActive, @ExpiresAt); SELECT CAST(SCOPE_IDENTITY() as int);";
 
         return await connection.QuerySingleAsync<int>(sql, shortUrl);
     }
@@ -56,11 +55,10 @@ public class ShortUrlRepository : IShortUrlRepository
     public async Task<bool> UpdateAsync(ShortUrl shortUrl)
     {
         using var connection = _connectionFactory.CreateConnection();
-
-        const string sql = @"
-            UPDATE ShortUrls
-            SET OriginalUrl = @OriginalUrl, ShortCode = @ShortCode
-            WHERE Id = @Id AND IsActive = 1";
+        var pg = IsPostgres(connection);
+        var sql = pg
+            ? @"UPDATE ""ShortUrls"" SET ""OriginalUrl"" = @OriginalUrl, ""ShortCode"" = @ShortCode WHERE ""Id"" = @Id AND ""IsActive"" = 1"
+            : @"UPDATE ShortUrls SET OriginalUrl = @OriginalUrl, ShortCode = @ShortCode WHERE Id = @Id AND IsActive = 1";
 
         var rows = await connection.ExecuteAsync(sql, shortUrl);
         return rows > 0;
@@ -69,8 +67,10 @@ public class ShortUrlRepository : IShortUrlRepository
     public async Task<bool> SoftDeleteAsync(int id)
     {
         using var connection = _connectionFactory.CreateConnection();
-
-        const string sql = "UPDATE ShortUrls SET IsActive = 0 WHERE Id = @Id";
+        var pg = IsPostgres(connection);
+        var sql = pg
+            ? @"UPDATE ""ShortUrls"" SET ""IsActive"" = 0 WHERE ""Id"" = @Id"
+            : @"UPDATE ShortUrls SET IsActive = 0 WHERE Id = @Id";
 
         var rows = await connection.ExecuteAsync(sql, new { Id = id });
         return rows > 0;
@@ -79,8 +79,10 @@ public class ShortUrlRepository : IShortUrlRepository
     public async Task<bool> IncrementClickCountAsync(int id)
     {
         using var connection = _connectionFactory.CreateConnection();
-
-        const string sql = "UPDATE ShortUrls SET ClickCount = ClickCount + 1 WHERE Id = @Id";
+        var pg = IsPostgres(connection);
+        var sql = pg
+            ? @"UPDATE ""ShortUrls"" SET ""ClickCount"" = ""ClickCount"" + 1 WHERE ""Id"" = @Id"
+            : @"UPDATE ShortUrls SET ClickCount = ClickCount + 1 WHERE Id = @Id";
 
         var rows = await connection.ExecuteAsync(sql, new { Id = id });
         return rows > 0;
@@ -89,8 +91,10 @@ public class ShortUrlRepository : IShortUrlRepository
     public async Task<bool> IsCodeUniqueAsync(string shortCode)
     {
         using var connection = _connectionFactory.CreateConnection();
-
-        const string sql = "SELECT COUNT(1) FROM ShortUrls WHERE ShortCode = @ShortCode";
+        var pg = IsPostgres(connection);
+        var sql = pg
+            ? @"SELECT COUNT(1) FROM ""ShortUrls"" WHERE ""ShortCode"" = @ShortCode"
+            : @"SELECT COUNT(1) FROM ShortUrls WHERE ShortCode = @ShortCode";
 
         var count = await connection.ExecuteScalarAsync<int>(sql, new { ShortCode = shortCode });
         return count == 0;

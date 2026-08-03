@@ -1,5 +1,7 @@
 ﻿// src/UrlShortner.Infrastructure/Repositories/ClickLogRepository.cs
 using Dapper;
+using Npgsql;
+using System.Data;
 using UrlShortner.Domain.Entities;
 using UrlShortner.Domain.Interfaces;
 using UrlShortner.Infrastructure.Data;
@@ -15,13 +17,15 @@ public class ClickLogRepository : IClickLogRepository
         _connectionFactory = connectionFactory;
     }
 
+    private bool IsPostgres(IDbConnection connection) => connection is NpgsqlConnection;
+
     public async Task CreateAsync(ClickLog clickLog)
     {
         using var connection = _connectionFactory.CreateConnection();
-
-        const string sql = @"
-            INSERT INTO ClickLogs (ShortUrlId, ClickedAt, IPAddress, UserAgent, Referrer)
-            VALUES (@ShortUrlId, @ClickedAt, @IPAddress, @UserAgent, @Referrer)";
+        var pg = IsPostgres(connection);
+        var sql = pg
+            ? @"INSERT INTO ""ClickLogs"" (""ShortUrlId"", ""ClickedAt"", ""IPAddress"", ""UserAgent"", ""Referrer"") VALUES (@ShortUrlId, @ClickedAt, @IPAddress, @UserAgent, @Referrer)"
+            : @"INSERT INTO ClickLogs (ShortUrlId, ClickedAt, IPAddress, UserAgent, Referrer) VALUES (@ShortUrlId, @ClickedAt, @IPAddress, @UserAgent, @Referrer)";
 
         await connection.ExecuteAsync(sql, clickLog);
     }
@@ -29,12 +33,10 @@ public class ClickLogRepository : IClickLogRepository
     public async Task<IEnumerable<ClickLog>> GetByShortUrlIdAsync(int shortUrlId, int limit = 100)
     {
         using var connection = _connectionFactory.CreateConnection();
-
-        const string sql = @"
-            SELECT TOP (@Limit) Id, ShortUrlId, ClickedAt, IPAddress, UserAgent, Referrer
-            FROM ClickLogs
-            WHERE ShortUrlId = @ShortUrlId
-            ORDER BY ClickedAt DESC";
+        var pg = IsPostgres(connection);
+        var sql = pg
+            ? @"SELECT ""Id"", ""ShortUrlId"", ""ClickedAt"", ""IPAddress"", ""UserAgent"", ""Referrer"" FROM ""ClickLogs"" WHERE ""ShortUrlId"" = @ShortUrlId ORDER BY ""ClickedAt"" DESC LIMIT @Limit"
+            : @"SELECT TOP (@Limit) Id, ShortUrlId, ClickedAt, IPAddress, UserAgent, Referrer FROM ClickLogs WHERE ShortUrlId = @ShortUrlId ORDER BY ClickedAt DESC";
 
         return await connection.QueryAsync<ClickLog>(sql, new { ShortUrlId = shortUrlId, Limit = limit });
     }
@@ -42,13 +44,10 @@ public class ClickLogRepository : IClickLogRepository
     public async Task<int> GetClickCountByDateRangeAsync(int shortUrlId, DateTime start, DateTime end)
     {
         using var connection = _connectionFactory.CreateConnection();
-
-        const string sql = @"
-            SELECT COUNT(1) 
-            FROM ClickLogs 
-            WHERE ShortUrlId = @ShortUrlId 
-            AND ClickedAt >= @Start 
-            AND ClickedAt <= @End";
+        var pg = IsPostgres(connection);
+        var sql = pg
+            ? @"SELECT COUNT(1) FROM ""ClickLogs"" WHERE ""ShortUrlId"" = @ShortUrlId AND ""ClickedAt"" >= @Start AND ""ClickedAt"" <= @End"
+            : @"SELECT COUNT(1) FROM ClickLogs WHERE ShortUrlId = @ShortUrlId AND ClickedAt >= @Start AND ClickedAt <= @End";
 
         return await connection.ExecuteScalarAsync<int>(sql, new { ShortUrlId = shortUrlId, Start = start, End = end });
     }
