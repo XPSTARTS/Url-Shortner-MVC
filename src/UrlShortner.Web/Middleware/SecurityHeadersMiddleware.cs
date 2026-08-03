@@ -14,13 +14,6 @@ public class SecurityHeadersMiddleware
     {
         var headers = context.Response.Headers;
 
-        // 🔒 HSTS (only in production)
-        if (!context.Request.IsHttps)
-        {
-            context.Response.Redirect($"https://{context.Request.Host}{context.Request.Path}");
-            return;
-        }
-
         // 🔒 Prevent MIME type sniffing
         headers["X-Content-Type-Options"] = "nosniff";
 
