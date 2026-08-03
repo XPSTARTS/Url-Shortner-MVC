@@ -2,65 +2,133 @@
 @{
     ViewData["Title"] = "URL Shortner";
 }
-<div class="container mt-5">
-    <div class="text-center mb-5">
-        <h1 class="display-4 fw-bold">Shorten Your Links</h1>
-        <p class="lead text-muted">Fast, simple, and free URL shortener with advanced analytics.</p>
+
+<div class="container">
+
+    @* HERO SECTION *@
+    <div class="hero-section">
+        <div class="hero-icon">🔗</div>
+        <h1 class="hero-title">
+            Shorten Your <span>Links</span>
+        </h1>
+        <p class="hero-subtitle">
+            Transform long URLs into clean, trackable short links in seconds.
+            Fast, secure, and free.
+        </p>
     </div>
-    
+
+    @* SHORTEN FORM *@
     <div class="row justify-content-center">
-        <div class="col-md-7">
-            <div class="card shadow">
+        <div class="col-lg-8">
+            <div class="card shorten-card glow-pulse">
                 <div class="card-body p-4">
                     <form asp-controller="Url" asp-action="Create" method="post">
                         <div class="mb-3">
                             <div class="input-group input-group-lg">
                                 <span class="input-group-text">🔗</span>
-                                <input asp-for="OriginalUrl" class="form-control" 
+                                <input asp-for="OriginalUrl" class="form-control"
                                        placeholder="Paste your long URL here..." />
                             </div>
-                            <span asp-validation-for="OriginalUrl" class="text-danger"></span>
+                            <span asp-validation-for="OriginalUrl" class="text-danger small"></span>
                         </div>
-                        <div class="mb-3">
-                            <div class="input-group">
-                                <span class="input-group-text">domain.com/</span>
-                                <input asp-for="CustomAlias" class="form-control" 
-                                       placeholder="custom-alias (optional)" />
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <div class="input-group">
+                                    <span class="input-group-text">shortner.com/</span>
+                                    <input asp-for="CustomAlias" class="form-control"
+                                           placeholder="custom-alias" />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <select asp-for="ExpiryDays" class="form-select">
+                                    <option value="">Expires: Never</option>
+                                    <option value="1">Expires: 1 Day</option>
+                                    <option value="7">Expires: 7 Days</option>
+                                    <option value="30">Expires: 30 Days</option>
+                                    <option value="90">Expires: 90 Days</option>
+                                </select>
                             </div>
                         </div>
+
                         <button type="submit" class="btn btn-primary btn-lg w-100">
-                            Shorten URL
+                            ✂️ Shorten URL
                         </button>
                     </form>
                 </div>
             </div>
-            @if (!User.Identity.IsAuthenticated)
+
+            @if (!User.Identity!.IsAuthenticated)
             {
-                <div class="text-center mt-3">
-                    <p>
-                        <a asp-controller="Auth" asp-action="Register">Create an account</a> 
-                        to track your links and view analytics.
-                    </p>
-                </div>
+                <p class="text-center mt-3">
+                    <a asp-controller="Auth" asp-action="Register" class="text-muted">
+                        Create an account to track your links →
+                    </a>
+                </p>
             }
         </div>
     </div>
-    
-    <div class="row mt-5 text-center">
-        <div class="col-md-4 mb-3">
-            <h3>⚡ Fast</h3>
-            <p class="text-muted">Instant redirects with Redis caching</p>
-        </div>
-        <div class="col-md-4 mb-3">
-            <h3>📊 Analytics</h3>
-            <p class="text-muted">Track clicks, referrers, and locations</p>
-        </div>
-        <div class="col-md-4 mb-3">
-            <h3>🔒 Secure</h3>
-            <p class="text-muted">2FA authentication for your account</p>
+
+    @* FEATURES SECTION *@
+    <div class="features-section">
+        <div class="row g-4">
+            <div class="col-md-3 col-sm-6">
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h4>Lightning Fast</h4>
+                    <p>Redis-powered redirects in under 1 millisecond</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h4>Analytics</h4>
+                    <p>Track clicks, referrers, and geographic data</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="feature-card">
+                    <div class="feature-icon">🔒</div>
+                    <h4>Secure</h4>
+                    <p>2FA authentication with email OTP verification</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="feature-card">
+                    <div class="feature-icon">🎨</div>
+                    <h4>Custom Aliases</h4>
+                    <p>Create branded short links that stand out</p>
+                </div>
+            </div>
         </div>
     </div>
+
+    @* STATS SECTION (static demo) *@
+    <div class="stats-section">
+        <div class="row g-4">
+            <div class="col-4">
+                <div class="stat-item">
+                    <div class="stat-number">10K+</div>
+                    <div class="stat-label">URLs Shortened</div>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="stat-item">
+                    <div class="stat-number">50K+</div>
+                    <div class="stat-label">Total Clicks</div>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="stat-item">
+                    <div class="stat-number">&lt;1ms</div>
+                    <div class="stat-label">Redirect Speed</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>
+
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 }

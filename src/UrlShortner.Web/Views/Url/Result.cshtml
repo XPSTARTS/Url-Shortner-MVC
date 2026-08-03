@@ -2,53 +2,68 @@
     ViewData["Title"] = "URL Shortened!";
 }
 
-<div class="row justify-content-center mt-5">
-    <div class="col-md-6">
-        <div class="card shadow">
-            <div class="card-body p-4 text-center">
-                <h2 class="text-success mb-4">URL Shortened! 🎉</h2>
+<div class="container">
+    <div class="row justify-content-center mt-5">
+        <div class="col-lg-6">
 
-                <div class="mb-4">
-                    <label class="form-label fw-bold">Your Short URL:</label>
-                    <div class="input-group">
-                        <input id="shortUrl" type="text" class="form-control form-control-lg"
-                               value="@ViewBag.ShortUrl" readonly />
-                        <button class="btn btn-outline-primary" onclick="copyToClipboard()">
-                            📋 Copy
-                        </button>
-                    </div>
+            @* SUCCESS ICON - Pure CSS *@
+            <div class="text-center mb-4">
+                <div class="success-circle">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
                 </div>
+            </div>
 
-                @* QR CODE *@
-                @if (ViewBag.QrCode != null)
-                {
+            <div class="card">
+                <div class="card-body p-4 text-center">
+                    <h2 class="mb-2" style="font-weight: 700;">Link Created!</h2>
+                    <p class="text-muted mb-4">Your shortened URL is ready to share</p>
+
+                    @* Short URL Display *@
                     <div class="mb-4">
-                        <p class="fw-bold">Scan QR Code:</p>
-                        <img src="data:image/png;base64,@ViewBag.QrCode"
-                             alt="QR Code"
-                             class="img-fluid border rounded"
-                             style="max-width: 200px;" />
-                        <br />
-                        <a href="data:image/png;base64,@ViewBag.QrCode"
-                           download="qrcode.png"
-                           class="btn btn-sm btn-outline-secondary mt-2">
-                            📥 Download QR
-                        </a>
+                        <div class="input-group input-group-lg">
+                            <input id="shortUrl" type="text" class="form-control text-center fw-bold"
+                                   value="@ViewBag.ShortUrl" readonly
+                                   style="font-size: 1.05rem; font-family: monospace;" />
+                            <button class="btn btn-primary px-4" onclick="copyUrl()" id="copyBtn">
+                                Copy
+                            </button>
+                        </div>
                     </div>
-                }
 
-                <p class="text-muted">
-                    Original: <a href="@ViewBag.OriginalUrl" target="_blank">@ViewBag.OriginalUrl</a>
-                </p>
-
-                <div class="mt-4">
-                    <a asp-action="Create" class="btn btn-primary">Shorten Another</a>
-                    @if (User.Identity?.IsAuthenticated == true)
+                    @* QR Code with hover effect *@
+                    @if (ViewBag.QrCode != null)
                     {
-                        <a asp-controller="Dashboard" asp-action="Index" class="btn btn-outline-secondary">
-                            Go to Dashboard
-                        </a>
+                        <div class="qr-wrapper">
+                            <img src="data:image/png;base64,@ViewBag.QrCode"
+                                 alt="QR Code" />
+                            <div class="qr-download">
+                                <a href="data:image/png;base64,@ViewBag.QrCode"
+                                   download="qrcode.png">Download QR</a>
+                            </div>
+                        </div>
                     }
+
+                    @* Original URL - Full width, clean truncation *@
+                    <div class="mt-4 text-start">
+                        <small class="text-muted text-uppercase" style="font-size: 0.7rem; letter-spacing: 1px;">Destination</small>
+                        <div class="original-url-box">
+                            <a href="@ViewBag.OriginalUrl" target="_blank" rel="noopener">
+                                @ViewBag.OriginalUrl
+                            </a>
+                        </div>
+                    </div>
+
+                    @* Actions *@
+                    <div class="mt-4 d-flex justify-content-center gap-2">
+                        <a asp-action="Create" class="btn btn-primary px-4">Shorten Another</a>
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            <a asp-controller="Dashboard" asp-action="Index"
+                               class="btn btn-outline-secondary px-4">View Dashboard</a>
+                        }
+                    </div>
                 </div>
             </div>
         </div>
@@ -57,12 +72,21 @@
 
 @section Scripts {
     <script>
-        function copyToClipboard() {
-            var copyText = document.getElementById("shortUrl");
-            copyText.select();
-            navigator.clipboard.writeText(copyText.value).then(() => {
-                alert("Copied!");
-            });
+        function copyUrl() {
+            var input = document.getElementById('shortUrl');
+            input.select();
+            navigator.clipboard.writeText(input.value);
+
+            var btn = document.getElementById('copyBtn');
+            btn.textContent = 'Copied!';
+            btn.style.background = 'var(--success)';
+            btn.style.color = 'var(--bg-deep)';
+
+            setTimeout(() => {
+                btn.textContent = 'Copy';
+                btn.style.background = '';
+                btn.style.color = '';
+            }, 1500);
         }
     </script>
 }

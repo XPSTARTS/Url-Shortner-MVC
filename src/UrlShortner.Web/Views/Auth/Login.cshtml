@@ -1,56 +1,53 @@
-﻿@* src/UrlShortner.Web/Views/Auth/Login.cshtml *@
-@model UrlShortner.Web.Models.LoginViewModel
-
+﻿@model UrlShortner.Web.Models.LoginViewModel
 @{
     ViewData["Title"] = "Sign In";
-    Layout = "_Layout";
 }
 
-<div class="row justify-content-center mt-5">
-    <div class="col-md-5">
-        <div class="card shadow">
-            <div class="card-body p-4">
-                <div class="text-center mb-4">
-                    <h2>🔗 URL Shortner</h2>
-                    <p class="text-muted">Sign in to your account</p>
-                </div>
+<div class="container">
+    <div class="row justify-content-center mt-5">
+        <div class="col-lg-5 col-md-7">
+            <div class="text-center mb-4">
+                <div class="hero-icon" style="font-size: 2.5rem;">🔗</div>
+                <h2 style="font-weight: 700;">Welcome Back</h2>
+                <p class="text-muted">Sign in to manage your short links</p>
+            </div>
 
-                <form asp-action="Login" method="post">
-                    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+            <div class="card">
+                <div class="card-body p-4">
+                    @if (TempData["SuccessMessage"] != null)
+                    {
+                        <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+                    }
 
-                    <div class="mb-3">
-                        <label asp-for="Email" class="form-label">Email Address</label>
-                        <div class="input-group">
-                            <span class="input-group-text">📧</span>
+                    <form asp-action="Login" method="post">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                        <div class="mb-3">
+                            <label asp-for="Email" class="form-label">Email Address</label>
                             <input asp-for="Email" class="form-control" placeholder="you@example.com" />
+                            <span asp-validation-for="Email" class="text-danger small"></span>
                         </div>
-                        <span asp-validation-for="Email" class="text-danger small"></span>
-                    </div>
 
-                    <div class="mb-3">
-                        <label asp-for="Password" class="form-label">Password</label>
-                        <div class="input-group">
-                            <span class="input-group-text">🔒</span>
+                        <div class="mb-3">
+                            <label asp-for="Password" class="form-label">Password</label>
                             <input asp-for="Password" class="form-control" placeholder="Enter your password" />
+                            <span asp-validation-for="Password" class="text-danger small"></span>
                         </div>
-                        <span asp-validation-for="Password" class="text-danger small"></span>
-                    </div>
 
-                    <div class="mb-3 d-flex justify-content-between align-items-center">
-                        <div class="form-check">
-                            <input asp-for="RememberMe" class="form-check-input" />
-                            <label asp-for="RememberMe" class="form-check-label">Remember me</label>
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <div class="form-check">
+                                <input asp-for="RememberMe" class="form-check-input" />
+                                <label asp-for="RememberMe" class="form-check-label small text-muted">Remember me</label>
+                            </div>
+                            <a asp-action="ForgotPassword" class="small">Forgot Password?</a>
                         </div>
-                        <a asp-action="ForgotPassword" class="text-muted small text-decoration-none">Forgot Password?</a>
-                    </div>
 
-                    <button type="submit" class="btn btn-primary w-100 btn-lg">
-                        Sign In
-                    </button>
-                </form>
+                        <button type="submit" class="btn btn-primary w-100 btn-lg">Sign In</button>
+                    </form>
 
-                <div class="text-center mt-3">
-                    <p class="mb-0">Don't have an account? <a asp-action="Register">Create one</a></p>
+                    <p class="text-center mt-4 mb-0 text-muted">
+                        Don't have an account? <a asp-action="Register">Create one</a>
+                    </p>
                 </div>
             </div>
         </div>
