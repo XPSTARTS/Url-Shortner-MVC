@@ -7,34 +7,27 @@ using UrlShortner.Infrastructure.Repositories;
 using UrlShortner.Web.Extensions;
 using UrlShortner.Web.Middleware;
 
-// ============================================
-// SERILOG CONFIGURATION
-// ============================================
 Log.Logger = new LoggerConfiguration()
-    .ReadFrom.Configuration(new ConfigurationBuilder().AddJsonFile("appsettings.json").Build()) // ← Reads from config
+    .ReadFrom.Configuration(new ConfigurationBuilder().AddJsonFile("appsettings.json").Build())
     .CreateLogger();
 
 try
 {
     Log.Information("Starting URL Shortner application");
 
-    // Load environment variables
     var configBuilder = new ConfigurationBuilder();
     configBuilder.LoadEnvironmentVariables();
 
     var builder = WebApplication.CreateBuilder(args);
 
-    // 🔑 Add Serilog - reads from appsettings.{Environment}.json automatically
     builder.Host.UseSerilog((context, config) =>
         config.ReadFrom.Configuration(context.Configuration));
 
-    // 🔑 Override settings with environment variables
     builder.Configuration
         .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
         .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true)
         .AddEnvironmentVariables();
 
-    // 🔑 Override connection strings with env vars
     var dbPassword = Environment.GetEnvironmentVariable("DB_PASSWORD");
     var redisConn = Environment.GetEnvironmentVariable("REDIS_CONNECTION");
     var jwtSecret = Environment.GetEnvironmentVariable("JWT_SECRET_KEY");
@@ -57,7 +50,6 @@ try
 
     builder.Services.AddControllersWithViews();
 
-    // Infrastructure
     builder.Services.AddSingleton<DbConnectionFactory>();
     builder.Services.AddScoped<IUserRepository, UserRepository>();
     builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
@@ -65,7 +57,6 @@ try
     builder.Services.AddScoped<IClickLogRepository, ClickLogRepository>();
     builder.Services.AddSingleton<IRedisCacheService, RedisCacheService>();
 
-    // Application
     builder.Services.AddScoped<PasswordService>();
     builder.Services.AddScoped<OtpService>();
     builder.Services.AddScoped<EmailService>();
@@ -81,9 +72,6 @@ try
 
     var app = builder.Build();
 
-    // ============================================
-    // ERROR HANDLING (ORDER MATTERS!)
-    // ============================================
     app.UseGlobalExceptionHandler();
     app.UseStatusCodePagesWithReExecute("/Error/{0}");
 
@@ -91,23 +79,20 @@ try
     {
         app.UseHsts();
     }
+    else
+    {
+        app.UseHttpsRedirection();
+    }
 
-    app.UseHttpsRedirection();
     app.UseStaticFiles();
     app.UseRouting();
 
-    // ============================================
-    // CUSTOM MIDDLEWARE
-    // ============================================
     app.UseSecurityHeaders();
     app.UseRateLimiting();
     app.UseJwtCookieAuthentication();
     app.UseAuthorization();
     app.UseInputSanitization();
 
-    // ============================================
-    // ROUTES
-    // ============================================
     app.MapControllerRoute(
         name: "default",
         pattern: "{controller=Home}/{action=Index}/{id?}");
