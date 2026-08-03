@@ -5,6 +5,10 @@ namespace UrlShortner.Web.Models;
 
 public class RegisterViewModel
 {
+    [Required(ErrorMessage = "Full name is required")]
+    [Display(Name = "Full Name")]
+    public string FullName { get; set; } = string.Empty;
+
     [Required(ErrorMessage = "Email is required")]
     [EmailAddress(ErrorMessage = "Invalid email format")]
     [Display(Name = "Email Address")]

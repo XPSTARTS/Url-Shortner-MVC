@@ -149,7 +149,7 @@ public class AuthController : Controller
             TempData["SuccessMessage"] = "Account created successfully! 🎉";
             return RedirectToAction("Index", "Dashboard");
         }
-        else if (model.Purpose == "ResetPassword")  // ← CHECK THIS SECTION
+        else if (model.Purpose == "ResetPassword")  
         {
             var result = await _authService.VerifyResetOtpAsync(model.Email, model.Otp);
 
@@ -162,17 +162,13 @@ public class AuthController : Controller
                 return View(model);
             }
 
-            // result.RefreshToken contains the reset token
-            // result.Message = "Code verified. You can now reset your password."
-
-            // Redirect to ResetPassword page with email and token
             return RedirectToAction("ResetPassword", new
             {
                 email = model.Email,
                 token = result.RefreshToken
             });
         }
-        else // Login
+        else 
         {
             var result = await _authService.CompleteLoginAsync(
                 model.Email, model.Otp, GetIpAddress(), GetUserAgent());

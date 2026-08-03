@@ -1,68 +1,92 @@
 ﻿@model UrlShortner.Domain.Entities.User
 @{
     ViewData["Title"] = "Profile";
+    var initial = !string.IsNullOrEmpty(Model.FullName)
+        ? Model.FullName[0].ToString().ToUpper()
+        : "U";
 }
-<div class="container mt-4">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card shadow">
-                <div class="card-body p-4">
-                    <h2 class="mb-4">Profile</h2>
-                    
-                    <div class="mb-3">
-                        <label class="text-muted small">User ID</label>
-                        <p class="fw-bold">#@Model.Id</p>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label class="text-muted small">Email</label>
-                        <p class="fw-bold">@Model.Email</p>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label class="text-muted small">Email Verified</label>
-                        <p>
-                            @if (Model.EmailVerified)
-                            {
-                                <span class="badge bg-success">Verified ✅</span>
-                            }
-                            else
-                            {
-                                <span class="badge bg-warning">Pending ⚠️</span>
-                            }
-                        </p>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label class="text-muted small">Member Since</label>
-                        <p>@Model.CreatedAt.ToString("MMMM dd, yyyy")</p>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label class="text-muted small">Last Login</label>
-                        <p>@(Model.LastLoginAt?.ToString("MMMM dd, yyyy HH:mm") ?? "N/A")</p>
-                    </div>
-                    
-                    <hr />
-                    
-                    <h5>URL Statistics</h5>
-                    <div class="row mt-3">
-                        <div class="col-4 text-center">
-                            <h3 class="text-primary">@ViewBag.TotalUrls</h3>
-                            <small class="text-muted">Total URLs</small>
-                        </div>
-                        <div class="col-4 text-center">
-                            <h3 class="text-success">@ViewBag.TotalClicks.ToString("N0")</h3>
-                            <small class="text-muted">Total Clicks</small>
-                        </div>
-                        <div class="col-4 text-center">
-                            <h3 class="text-info">@ViewBag.ActiveUrls</h3>
-                            <small class="text-muted">Active</small>
+
+<div class="container page-enter">
+    <div class="row justify-content-center mt-4">
+        <div class="col-lg-8">
+
+            <a asp-action="Index" class="btn btn-outline-secondary btn-sm mb-3 back-btn">
+                ← Back to Dashboard
+            </a>
+
+            <div class="row g-4">
+
+                @* PROFILE CARD *@
+                <div class="col-md-5 stagger-1">
+                    <div class="card profile-card h-100">
+                        <div class="card-body p-4 text-center">
+                            <div class="profile-avatar-wrapper">
+                                <div class="profile-avatar">@initial</div>
+                                <div class="avatar-ring"></div>
+                            </div>
+                            <h3 class="profile-name">@Model.FullName</h3>
+                            <p class="profile-email">@Model.Email</p>
+
+                            <div class="profile-divider"></div>
+
+                            <div class="profile-info">
+                                <div class="profile-row">
+                                    <span class="profile-label">User ID</span>
+                                    <span class="profile-value">#@Model.Id</span>
+                                </div>
+                                <div class="profile-row">
+                                    <span class="profile-label">Status</span>
+                                    <span class="profile-value">
+                                        @if (Model.EmailVerified)
+                                        {
+                                            <span class="badge bg-success">Verified</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-warning">Pending</span>
+                                        }
+                                    </span>
+                                </div>
+                                <div class="profile-row">
+                                    <span class="profile-label">Member Since</span>
+                                    <span class="profile-value profile-date">@Model.CreatedAt.ToString("MMMM dd, yyyy")</span>
+                                </div>
+                                <div class="profile-row">
+                                    <span class="profile-label">Last Login</span>
+                                    <span class="profile-value profile-date">@(Model.LastLoginAt?.ToString("MMM dd, yyyy HH:mm") ?? "N/A")</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    
-                    <div class="mt-4">
-                        <a asp-action="Index" class="btn btn-primary">Back to Dashboard</a>
+                </div>
+
+                @* STATS CARDS *@
+                <div class="col-md-7">
+                    <div class="row g-3">
+                        <div class="col-12 stagger-2">
+                            <div class="card stat-card-large">
+                                <div class="card-body">
+                                    <p class="stat-label">Total URLs</p>
+                                    <p class="stat-value">@ViewBag.TotalUrls</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6 stagger-3">
+                            <div class="card stat-card-large">
+                                <div class="card-body">
+                                    <p class="stat-label">Total Clicks</p>
+                                    <p class="stat-value">@((ViewBag.TotalClicks as long?)?.ToString("N0") ?? "0")</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6 stagger-4">
+                            <div class="card stat-card-large">
+                                <div class="card-body">
+                                    <p class="stat-label">Active Links</p>
+                                    <p class="stat-value">@ViewBag.ActiveUrls</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

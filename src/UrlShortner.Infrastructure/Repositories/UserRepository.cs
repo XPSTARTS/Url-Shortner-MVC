@@ -20,9 +20,9 @@ public class UserRepository : IUserRepository
         using var connection = _connectionFactory.CreateConnection();
 
         const string sql = @"
-            SELECT Id, Email, PasswordHash, EmailVerified, CreatedAt, LastLoginAt
-            FROM Users
-            WHERE Id = @Id";
+        SELECT Id, Email, PasswordHash, FullName, EmailVerified, CreatedAt, LastLoginAt
+        FROM Users
+        WHERE Id = @Id";
 
         return await connection.QuerySingleOrDefaultAsync<User>(sql, new { Id = id });
     }
@@ -32,9 +32,9 @@ public class UserRepository : IUserRepository
         using var connection = _connectionFactory.CreateConnection();
 
         const string sql = @"
-            SELECT Id, Email, PasswordHash, EmailVerified, CreatedAt, LastLoginAt
-            FROM Users
-            WHERE Email = @Email";
+        SELECT Id, Email, PasswordHash, FullName, EmailVerified, CreatedAt, LastLoginAt
+        FROM Users
+        WHERE Email = @Email";
 
         return await connection.QuerySingleOrDefaultAsync<User>(sql, new { Email = email });
     }

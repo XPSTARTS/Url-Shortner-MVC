@@ -1,104 +1,88 @@
-﻿@* src/UrlShortner.Web/Views/Auth/VerifyOtp.cshtml *@
-@model UrlShortner.Web.Models.VerifyOtpViewModel
+﻿@model UrlShortner.Web.Models.VerifyOtpViewModel
 @{
     var isResetPassword = Model.Purpose == "ResetPassword";
     ViewData["Title"] = isResetPassword ? "Reset Password" : "Verify Code";
-    Layout = "_Layout";
 }
 
-<div class="row justify-content-center mt-5">
-    <div class="col-md-5">
-        <div class="card shadow">
-            <div class="card-body p-4">
+<div class="container">
+    <div class="row justify-content-center mt-5">
+        <div class="col-lg-5 col-md-7">
 
-                @if (isResetPassword)
-                {
-                    @* RESET PASSWORD HEADER *@
-                    <div class="text-center mb-4">
-                        <div class="mb-3">
-                            <span style="font-size: 3rem;">🔑</span>
+            @* HEADER ICON *@
+            <div class="text-center mb-4">
+                <div class="otp-icon-wrapper">
+                    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        @if (isResetPassword)
+                        {
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                        }
+                        else
+                        {
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                            <polyline points="22,6 12,13 2,6"></polyline>
+                        }
+                    </svg>
+                </div>
+                <h2 style="font-weight: 700; margin-top: 0.8rem;">
+                    @(isResetPassword ? "Reset Password" : "Check Your Email")
+                </h2>
+                <p class="text-muted">
+                    We sent a 6-digit code to<br />
+                    <strong style="color: var(--text-primary);">@Model.Email</strong>
+                </p>
+            </div>
+
+            @* INFO ALERT *@
+            @if (ViewBag.Message != null)
+            {
+                <div class="alert alert-info fade-in text-center">@ViewBag.Message</div>
+            }
+
+            @* OTP CARD *@
+            <div class="card otp-card">
+                <div class="card-body p-4">
+                    <form asp-action="VerifyOtp" method="post">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                        <input type="hidden" asp-for="Email" />
+                        <input type="hidden" asp-for="Purpose" />
+
+                        <div class="mb-4">
+                            <label asp-for="Otp" class="form-label text-center d-block" style="font-weight: 600; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px;">
+                                @(isResetPassword ? "Reset Code" : "Verification Code")
+                            </label>
+                            <input asp-for="Otp"
+                                   class="form-control otp-input"
+                                   placeholder="000000"
+                                   maxlength="6"
+                                   autocomplete="one-time-code"
+                                   inputmode="numeric" />
+                            <span asp-validation-for="Otp" class="text-danger small text-center d-block mt-1"></span>
                         </div>
-                        <h2>Reset Your Password</h2>
-                        <p class="text-muted">
-                            We sent a 6-digit reset code to<br />
-                            <strong>@Model.Email</strong>
-                        </p>
-                    </div>
-                }
-                else
-                {
-                    @* REGULAR VERIFICATION HEADER *@
-                    <div class="text-center mb-4">
-                        <h2>📧 Check Your Email</h2>
-                        <p class="text-muted">
-                            We sent a 6-digit verification code to<br />
-                            <strong>@Model.Email</strong>
-                        </p>
-                    </div>
-                }
 
-                @if (ViewBag.Message != null)
-                {
-                    <div class="alert alert-info">
-                        <small>@ViewBag.Message</small>
-                    </div>
-                }
+                        <button type="submit" class="btn btn-primary w-100 btn-lg">
+                            @(isResetPassword ? "Verify Reset Code" : "Verify & Continue")
+                        </button>
+                    </form>
 
-                <form asp-action="VerifyOtp" method="post">
-                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
-                    <input type="hidden" asp-for="Email" />
-                    <input type="hidden" asp-for="Purpose" />
-
-                    <div class="mb-4">
-                        <label asp-for="Otp" class="form-label fw-bold">
-                            @(isResetPassword ? "Reset Code" : "Verification Code")
-                        </label>
-                        <input asp-for="Otp"
-                               class="form-control form-control-lg text-center"
-                               placeholder="000000"
-                               maxlength="6"
-                               autocomplete="one-time-code"
-                               inputmode="numeric"
-                               style="letter-spacing: 12px; font-size: 2rem; font-weight: 600;" />
-                        <span asp-validation-for="Otp" class="text-danger small"></span>
-                    </div>
-
-                    <button type="submit" class="btn btn-primary w-100 btn-lg">
-                        @(isResetPassword ? "Verify Reset Code" : "Verify & Continue")
-                    </button>
-                </form>
-
-                <div class="text-center mt-4">
-                    @if (isResetPassword)
-                    {
+                    <div class="text-center mt-3">
                         <p class="text-muted small mb-0">
-                            Didn't receive the code?
-                            <a asp-action="ForgotPassword">Send again</a>
+                            @if (isResetPassword)
+                            {
+                                <span>Didn't receive the code? <a asp-action="ForgotPassword">Send again</a></span>
+                            }
+                            else
+                            {
+                                <span>Didn't receive the code? Check spam folder.</span>
+                            }
                         </p>
-                    }
-                    else
-                    {
-                        <p class="text-muted small mb-0">
-                            Didn't receive the code? Check spam folder.
+                        <p class="text-muted small mt-1">
+                            ⏱ Code expires in 10 minutes
                         </p>
-                    }
+                    </div>
                 </div>
             </div>
-        </div>
-
-        @* Help text at the bottom *@
-        <div class="text-center mt-3">
-            <p class="text-muted small">
-                @if (isResetPassword)
-                {
-                    <span>🔒 Code expires in 10 minutes for security.</span>
-                }
-                else
-                {
-                    <span>⏰ Code expires in 10 minutes.</span>
-                }
-            </p>
         </div>
     </div>
 </div>
@@ -106,9 +90,8 @@
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
     <script>
-        // Auto-focus the OTP input
         document.addEventListener('DOMContentLoaded', function() {
-            var otpInput = document.querySelector('input[asp-for="Otp"]');
+            var otpInput = document.querySelector('.otp-input');
             if (otpInput) otpInput.focus();
         });
     </script>

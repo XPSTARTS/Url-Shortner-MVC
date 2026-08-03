@@ -1,79 +1,122 @@
-﻿@* src/UrlShortner.Web/Views/Auth/Register.cshtml *@
-@model UrlShortner.Web.Models.RegisterViewModel
-
+﻿@model UrlShortner.Web.Models.RegisterViewModel
 @{
     ViewData["Title"] = "Create Account";
-    Layout = "_Layout";
 }
 
-<div class="row justify-content-center mt-5">
-    <div class="col-md-5">
-        <div class="card shadow">
-            <div class="card-body p-4">
-                <div class="text-center mb-4">
-                    <h2>🔗 URL Shortner</h2>
-                    <p class="text-muted">Create your account</p>
+<div class="container">
+    <div class="row justify-content-center mt-4">
+        <div class="col-lg-6 col-md-8">
+
+            @* HEADER *@
+            <div class="text-center mb-4 stagger-1">
+                <div class="register-icon-wrapper">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="8.5" cy="7" r="4"></circle>
+                        <line x1="20" y1="8" x2="20" y2="14"></line>
+                        <line x1="23" y1="11" x2="17" y2="11"></line>
+                    </svg>
                 </div>
+                <h2 class="register-heading">Create your account</h2>
+                <p class="register-sub">Start building shorter, smarter links in seconds.</p>
+            </div>
 
-                <form asp-action="Register" method="post">
-                    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+            @* FORM CARD *@
+            <div class="card register-card stagger-2">
+                <div class="card-body p-4">
+                    <form asp-action="Register" method="post">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
 
-                    <div class="mb-3">
-                        <label asp-for="Email" class="form-label">Email Address</label>
-                        <div class="input-group">
-                            <span class="input-group-text">📧</span>
-                            <input asp-for="Email" class="form-control" placeholder="you@example.com" />
-                        </div>
-                        <span asp-validation-for="Email" class="text-danger small"></span>
-                    </div>
-
-                    
-                    <div class="mb-3">
-                        <label asp-for="Password" class="form-label">Password</label>
-                        <div class="input-group">
-                            <span class="input-group-text">🔒</span>
-                            <input asp-for="Password" id="passwordInput" class="form-control"
-                                   placeholder="Min. 8 characters"
-                                   oninput="checkPasswordStrength()" />
-                        </div>
-
-                        @* Password strength meter *@
-                        <div class="mt-2">
-                            <div class="progress" style="height: 6px;">
-                                <div id="strengthBar" class="progress-bar bg-danger"
-                                     style="width: 0%;"></div>
+                        @* FULL NAME *@
+                        <div class="mb-3">
+                            <label asp-for="FullName" class="form-label">Full Name</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                                </span>
+                                <input asp-for="FullName" class="form-control" placeholder="John Doe" autocomplete="name" />
                             </div>
-                            <small id="strengthText" class="text-muted mt-1"></small>
+                            <span asp-validation-for="FullName" class="text-danger small"></span>
                         </div>
 
-                        @* Password requirements checklist *@
-                        <div class="mt-2 small">
-                            <div id="req-length" class="text-danger">✗ At least 8 characters</div>
-                            <div id="req-upper" class="text-danger">✗ One uppercase letter</div>
-                            <div id="req-lower" class="text-danger">✗ One lowercase letter</div>
-                            <div id="req-number" class="text-danger">✗ One number</div>
-                            <div id="req-special" class="text-danger">✗ One special character</div>
+                        @* EMAIL *@
+                        <div class="mb-3">
+                            <label asp-for="Email" class="form-label">Email Address</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                                </span>
+                                <input asp-for="Email" class="form-control" placeholder="you@example.com" autocomplete="email" />
+                            </div>
+                            <span asp-validation-for="Email" class="text-danger small"></span>
                         </div>
 
-                        <span asp-validation-for="Password" class="text-danger"></span>
-                    </div>
-
-                    <div class="mb-4">
-                        <label asp-for="ConfirmPassword" class="form-label">Confirm Password</label>
-                        <div class="input-group">
-                            <span class="input-group-text">🔒</span>
-                            <input asp-for="ConfirmPassword" class="form-control" placeholder="Repeat your password" />
+                        @* PASSWORD *@
+                        <div class="mb-3">
+                            <label asp-for="Password" class="form-label">Password</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                                </span>
+                                <input asp-for="Password" id="passwordInput" class="form-control"
+                                       placeholder="Min. 8 characters" autocomplete="new-password"
+                                       oninput="checkPasswordStrength()" />
+                                <button type="button" class="input-group-text toggle-password" onclick="togglePassword('passwordInput', 'eyeIcon1')" tabindex="-1">
+                                    <svg id="eyeIcon1" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                </button>
+                            </div>
+                            <span asp-validation-for="Password" class="text-danger small"></span>
                         </div>
-                        <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
-                    </div>
 
-                    <button type="submit" class="btn btn-primary w-100 btn-lg">
-                        Create Account
-                    </button>
-                </form>
+                        @* CONFIRM PASSWORD *@
+                        <div class="mb-3">
+                            <label asp-for="ConfirmPassword" class="form-label">Confirm Password</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path><circle cx="12" cy="16" r="1"></circle></svg>
+                                </span>
+                                <input asp-for="ConfirmPassword" id="confirmPasswordInput" class="form-control" placeholder="Repeat your password" autocomplete="new-password" />
+                                <button type="button" class="input-group-text toggle-password" onclick="togglePassword('confirmPasswordInput', 'eyeIcon2')" tabindex="-1">
+                                    <svg id="eyeIcon2" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                </button>
+                            </div>
+                            <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
+                        </div>
 
-                <div class="text-center mt-3">
-                    <p class="mb-0">Already have an account? <a asp-action="Login">Sign in</a></p>
+                        @* STRENGTH + REQUIREMENTS *@
+                        <div class="password-section">
+                            <div class="strength-indicator">
+                                <div class="strength-label">Strength</div>
+                                <div class="strength-bar-wrap">
+                                    <div id="strengthBar" class="strength-fill"></div>
+                                </div>
+                                <small id="strengthText"></small>
+                            </div>
+                            <div class="requirements-list" id="requirementsBox">
+                                <div class="req-item" id="req-length">
+                                    <span class="req-dot"></span>8+ characters
+                                </div>
+                                <div class="req-item" id="req-upper">
+                                    <span class="req-dot"></span>Uppercase
+                                </div>
+                                <div class="req-item" id="req-lower">
+                                    <span class="req-dot"></span>Lowercase
+                                </div>
+                                <div class="req-item" id="req-number">
+                                    <span class="req-dot"></span>Number
+                                </div>
+                                <div class="req-item" id="req-special">
+                                    <span class="req-dot"></span>Special char
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100 btn-lg mt-4">Create Account</button>
+                    </form>
+
+                    <p class="text-center mt-4 mb-0 text-muted">
+                        Already have an account? <a asp-action="Login">Sign in</a>
+                    </p>
                 </div>
             </div>
         </div>
@@ -83,61 +126,51 @@
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
     <script>
-        function checkPasswordStrength() {
-            var password = document.getElementById('passwordInput').value;
-
-            // Check requirements
-            var hasLength = password.length >= 8;
-            var hasUpper = /[A-Z]/.test(password);
-            var hasLower = /[a-z]/.test(password);
-            var hasNumber = /[0-9]/.test(password);
-            var hasSpecial = /[^a-zA-Z0-9]/.test(password);
-
-            // Update checklist
-            updateRequirement('req-length', hasLength);
-            updateRequirement('req-upper', hasUpper);
-            updateRequirement('req-lower', hasLower);
-            updateRequirement('req-number', hasNumber);
-            updateRequirement('req-special', hasSpecial);
-
-            // Calculate strength
-            var strength = 0;
-            if (hasLength) strength += 20;
-            if (password.length >= 12) strength += 10;
-            if (hasUpper) strength += 20;
-            if (hasLower) strength += 20;
-            if (hasNumber) strength += 15;
-            if (hasSpecial) strength += 15;
-
-            // Update bar
-            var bar = document.getElementById('strengthBar');
-            var text = document.getElementById('strengthText');
-            bar.style.width = strength + '%';
-
-            if (strength <= 25) {
-                bar.className = 'progress-bar bg-danger';
-                text.textContent = 'Weak';
-            } else if (strength <= 50) {
-                bar.className = 'progress-bar bg-warning';
-                text.textContent = 'Fair';
-            } else if (strength <= 75) {
-                bar.className = 'progress-bar bg-info';
-                text.textContent = 'Good';
+        function togglePassword(inputId, iconId) {
+            var input = document.getElementById(inputId);
+            var icon = document.getElementById(iconId);
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line>';
             } else {
-                bar.className = 'progress-bar bg-success';
-                text.textContent = 'Strong!';
+                input.type = 'password';
+                icon.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>';
             }
         }
 
-        function updateRequirement(id, isValid) {
+        function checkPasswordStrength() {
+            var p = document.getElementById('passwordInput').value;
+            var has = {
+                length: p.length >= 8,
+                upper: /[A-Z]/.test(p),
+                lower: /[a-z]/.test(p),
+                number: /[0-9]/.test(p),
+                special: /[^a-zA-Z0-9]/.test(p)
+            };
+
+            updateReq('req-length', has.length);
+            updateReq('req-upper', has.upper);
+            updateReq('req-lower', has.lower);
+            updateReq('req-number', has.number);
+            updateReq('req-special', has.special);
+
+            var score = (has.length ? 20 : 0) + (p.length >= 12 ? 10 : 0) + (has.upper ? 20 : 0) + (has.lower ? 20 : 0) + (has.number ? 15 : 0) + (has.special ? 15 : 0);
+            var bar = document.getElementById('strengthBar');
+            var txt = document.getElementById('strengthText');
+            bar.style.width = score + '%';
+
+            var colors = ['var(--danger)', 'var(--warning)', 'var(--accent)', 'var(--success)'];
+            var labels = ['Too weak', 'Getting there', 'Solid', 'Very strong'];
+            var idx = score <= 25 ? 0 : score <= 50 ? 1 : score <= 75 ? 2 : 3;
+            bar.style.background = colors[idx];
+            txt.textContent = labels[idx];
+            txt.style.color = colors[idx];
+        }
+
+        function updateReq(id, ok) {
             var el = document.getElementById(id);
-            if (isValid) {
-                el.innerHTML = '✓ ' + el.innerHTML.substring(2);
-                el.className = 'text-success';
-            } else {
-                el.innerHTML = '✗ ' + el.innerHTML.substring(2);
-                el.className = 'text-danger';
-            }
+            el.classList.toggle('req-met', ok);
+            el.classList.toggle('req-unmet', !ok);
         }
     </script>
 }
