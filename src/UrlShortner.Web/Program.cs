@@ -79,14 +79,9 @@ try
     {
         app.UseHsts();
     }
-    else
-    {
-        app.UseHttpsRedirection();
-    }
 
     app.UseStaticFiles();
     app.UseRouting();
-
     app.UseSecurityHeaders();
     app.UseRateLimiting();
     app.UseJwtCookieAuthentication();
