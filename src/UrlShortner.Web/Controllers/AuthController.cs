@@ -145,9 +145,8 @@ public class AuthController : Controller
                 return View(model);
             }
 
-            SetTokenCookies(result.AccessToken!, result.RefreshToken!);
-            TempData["SuccessMessage"] = "Account created successfully! 🎉";
-            return RedirectToAction("Index", "Dashboard");
+            TempData["SuccessMessage"] = "Account created successfully! Please sign in.";
+            return RedirectToAction("Login");
         }
         else if (model.Purpose == "ResetPassword")  
         {
