@@ -104,15 +104,13 @@ Your OTP Code: {otp}
         var password = Environment.GetEnvironmentVariable("SMTP_PASSWORD")
             ?? _configuration["EmailSettings:SmtpPassword"];
 
-        // 🔑 Guard against nulls
-        if (string.IsNullOrEmpty(smtpHost)) throw new InvalidOperationException("SMTP host not configured");
-        if (string.IsNullOrEmpty(username)) throw new InvalidOperationException("SMTP username not configured");
-        if (string.IsNullOrEmpty(password)) throw new InvalidOperationException("SMTP password not configured");
+        if (string.IsNullOrEmpty(smtpHost) || string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
+            throw new InvalidOperationException("SMTP settings missing");
 
         Console.WriteLine($"📧 Attempting SMTP: {smtpHost}:{smtpPort} with user: {username}");
 
         var message = new MimeMessage();
-        message.From.Add(new MailboxAddress("URL Shortner", "noreply@urlshortner.com"));
+        message.From.Add(new MailboxAddress("URL Shortner", username));
         message.To.Add(new MailboxAddress(toEmail, toEmail));
         message.Subject = subject;
         message.Body = new BodyBuilder { HtmlBody = htmlBody }.ToMessageBody();
@@ -120,23 +118,16 @@ Your OTP Code: {otp}
         using var client = new SmtpClient();
         client.Timeout = 15000;
 
-        try
-        {
-            await client.ConnectAsync(smtpHost, smtpPort, SecureSocketOptions.StartTls);
-            Console.WriteLine($"📧 Connected to {smtpHost}");
+        // 🔑 Use Auto - it negotiates the best option
+        await client.ConnectAsync(smtpHost, smtpPort, SecureSocketOptions.Auto);
+        Console.WriteLine($"📧 Connected to {smtpHost}");
 
-            await client.AuthenticateAsync(username, password);
-            Console.WriteLine($"📧 Authenticated");
+        await client.AuthenticateAsync(username, password);
+        Console.WriteLine($"📧 Authenticated");
 
-            await client.SendAsync(message);
-            Console.WriteLine($"📧 Email sent to {toEmail}");
+        await client.SendAsync(message);
+        Console.WriteLine($"📧 Email sent to {toEmail}");
 
-            await client.DisconnectAsync(true);
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"📧 SMTP ERROR: {ex.Message}");
-            throw;
-        }
+        await client.DisconnectAsync(true);
     }
 }
