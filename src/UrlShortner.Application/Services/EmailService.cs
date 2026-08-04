@@ -117,6 +117,8 @@ Your OTP Code: {otp}
         message.Body = bodyBuilder.ToMessageBody();
 
         using var client = new SmtpClient();
+        client.Timeout = 10000;
+
         await client.ConnectAsync(smtpHost, smtpPort, SecureSocketOptions.StartTls);
 
         if (!string.IsNullOrEmpty(username) && !string.IsNullOrEmpty(password))
