@@ -96,37 +96,43 @@ Your OTP Code: {otp}
     private async Task SendRealEmailAsync(string toEmail, string subject, string htmlBody)
     {
         var smtpHost = Environment.GetEnvironmentVariable("SMTP_HOST")
-            ?? _configuration["EmailSettings:SmtpHost"]!;
+            ?? _configuration["EmailSettings:SmtpHost"];
         var smtpPort = int.Parse(Environment.GetEnvironmentVariable("SMTP_PORT")
             ?? _configuration["EmailSettings:SmtpPort"] ?? "587");
         var username = Environment.GetEnvironmentVariable("SMTP_USERNAME")
             ?? _configuration["EmailSettings:SmtpUsername"];
         var password = Environment.GetEnvironmentVariable("SMTP_PASSWORD")
             ?? _configuration["EmailSettings:SmtpPassword"];
-        var fromName = Environment.GetEnvironmentVariable("SMTP_FROM_NAME")
-            ?? _configuration["EmailSettings:FromName"] ?? "URL Shortner";
-        var fromEmail = Environment.GetEnvironmentVariable("SMTP_FROM_EMAIL")
-            ?? _configuration["EmailSettings:FromEmail"] ?? "noreply@urlshortner.com";
+
+        // 🔑 LOG: Show what we're connecting to
+        Console.WriteLine($"📧 Attempting SMTP: {smtpHost}:{smtpPort} with user: {username}");
 
         var message = new MimeMessage();
-        message.From.Add(new MailboxAddress(fromName, fromEmail));
+        message.From.Add(new MailboxAddress("URL Shortner", "noreply@urlshortner.com"));
         message.To.Add(new MailboxAddress(toEmail, toEmail));
         message.Subject = subject;
-
-        var bodyBuilder = new BodyBuilder { HtmlBody = htmlBody };
-        message.Body = bodyBuilder.ToMessageBody();
+        message.Body = new BodyBuilder { HtmlBody = htmlBody }.ToMessageBody();
 
         using var client = new SmtpClient();
-        client.Timeout = 10000;
+        client.Timeout = 15000;
 
-        await client.ConnectAsync(smtpHost, smtpPort, SecureSocketOptions.StartTls);
-
-        if (!string.IsNullOrEmpty(username) && !string.IsNullOrEmpty(password))
+        try
         {
-            await client.AuthenticateAsync(username, password);
-        }
+            await client.ConnectAsync(smtpHost, smtpPort, SecureSocketOptions.StartTls);
+            Console.WriteLine($"📧 Connected to {smtpHost}");
 
-        await client.SendAsync(message);
-        await client.DisconnectAsync(true);
+            await client.AuthenticateAsync(username, password);
+            Console.WriteLine($"📧 Authenticated");
+
+            await client.SendAsync(message);
+            Console.WriteLine($"📧 Email sent to {toEmail}");
+
+            await client.DisconnectAsync(true);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"📧 SMTP ERROR: {ex.Message}");
+            throw;
+        }
     }
 }
