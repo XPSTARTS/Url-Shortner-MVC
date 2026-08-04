@@ -197,7 +197,11 @@ public class AuthService
 
         // Generate and send OTP
         var otp = await _otpService.GenerateOtpAsync(email, OtpPurpose.ResetPassword);
-        await _emailService.SendOtpEmailAsync(email, otp, "ResetPassword");
+        _ = Task.Run(async () =>
+        {
+            try { await _emailService.SendOtpEmailAsync(email, otp, "ResetPassword"); }
+            catch { }
+        });
 
         return AuthResult.Success("If an account exists with this email, a reset code has been sent.");
     }

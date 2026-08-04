@@ -104,7 +104,11 @@ Your OTP Code: {otp}
         var password = Environment.GetEnvironmentVariable("SMTP_PASSWORD")
             ?? _configuration["EmailSettings:SmtpPassword"];
 
-        // 🔑 LOG: Show what we're connecting to
+        // 🔑 Guard against nulls
+        if (string.IsNullOrEmpty(smtpHost)) throw new InvalidOperationException("SMTP host not configured");
+        if (string.IsNullOrEmpty(username)) throw new InvalidOperationException("SMTP username not configured");
+        if (string.IsNullOrEmpty(password)) throw new InvalidOperationException("SMTP password not configured");
+
         Console.WriteLine($"📧 Attempting SMTP: {smtpHost}:{smtpPort} with user: {username}");
 
         var message = new MimeMessage();
