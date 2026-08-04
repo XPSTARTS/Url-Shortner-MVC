@@ -30,26 +30,32 @@ public class RedirectController : Controller
         if (IsReservedPath(shortCode))
             return NotFound();
 
-        var originalUrl = await _urlShorteningService.GetOriginalUrlAsync(shortCode);
-
-        if (originalUrl == null)
-            return NotFound();
-
-        // 🔑 Check if URL is expired
         var url = await _shortUrlRepository.GetByCodeAsync(shortCode);
-        if (url?.ExpiresAt != null && url.ExpiresAt < DateTime.UtcNow)
-        {
-            return NotFound();
-        }
 
-        // Record click and redirect
+        if (url == null)
+            return NotFound();
+
+        // Check if URL is expired
+        if (url.ExpiresAt != null && url.ExpiresAt < DateTime.UtcNow)
+            return NotFound();
+
+        // 🔑 Increment click count (fire and forget)
+        _ = Task.Run(async () =>
+        {
+            try
+            {
+                await _shortUrlRepository.IncrementClickCountAsync(url.Id);
+            }
+            catch { }
+        });
+
         _ = Task.Run(async () =>
         {
             try
             {
                 var clickLog = new ClickLog
                 {
-                    ShortUrlId = url?.Id ?? 0,
+                    ShortUrlId = url.Id,
                     ClickedAt = DateTime.UtcNow,
                     IPAddress = HttpContext.Connection.RemoteIpAddress?.ToString(),
                     UserAgent = Request.Headers["User-Agent"].ToString(),
@@ -60,7 +66,7 @@ public class RedirectController : Controller
             catch { }
         });
 
-        return RedirectPermanent(originalUrl);
+        return RedirectPermanent(url.OriginalUrl);
     }
 
     private bool IsReservedPath(string path)
