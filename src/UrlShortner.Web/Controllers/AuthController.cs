@@ -35,7 +35,7 @@ public class AuthController : Controller
         if (!ModelState.IsValid)
             return View(model);
 
-        var result = await _authService.InitiateRegistrationAsync(model.Email, model.Password);
+        var (result, otp) = await _authService.InitiateRegistrationAsync(model.Email, model.Password);
 
         if (!result.IsSuccess)
         {
@@ -43,11 +43,11 @@ public class AuthController : Controller
             return View(model);
         }
 
-        // Store email in TempData to carry to OTP page
         TempData["Email"] = model.Email;
         TempData["Password"] = model.Password;
         TempData["Purpose"] = "Register";
         TempData["Message"] = result.Message;
+        TempData["DevOtp"] = otp;
 
         return RedirectToAction("VerifyOtp");
     }
@@ -72,7 +72,7 @@ public class AuthController : Controller
         if (!ModelState.IsValid)
             return View(model);
 
-        var result = await _authService.InitiateLoginAsync(model.Email, model.Password);
+        var (result, otp) = await _authService.InitiateLoginAsync(model.Email, model.Password);
 
         if (!result.IsSuccess)
         {
@@ -80,12 +80,12 @@ public class AuthController : Controller
             return View(model);
         }
 
-        // Store in TempData for OTP page
         TempData["Email"] = model.Email;
         TempData["Purpose"] = "Login";
         TempData["RememberMe"] = model.RememberMe;
         TempData["ReturnUrl"] = returnUrl;
         TempData["Message"] = result.Message;
+        TempData["DevOtp"] = otp;
 
         return RedirectToAction("VerifyOtp");
     }

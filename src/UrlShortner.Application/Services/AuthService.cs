@@ -1,14 +1,9 @@
-﻿// src/UrlShortner.Application/Services/AuthService.cs
+﻿using UrlShortner.Application.Common;
+using UrlShortner.Application.Services;
 using UrlShortner.Domain.Entities;
 using UrlShortner.Domain.Enums;
 using UrlShortner.Domain.Interfaces;
-using UrlShortner.Application.Common;
 
-namespace UrlShortner.Application.Services;
-
-/// <summary>
-/// Orchestrates the complete authentication flow.
-/// </summary>
 public class AuthService
 {
     private readonly IUserRepository _userRepository;
@@ -17,8 +12,8 @@ public class AuthService
     private readonly EmailService _emailService;
     private readonly JwtTokenService _jwtTokenService;
     private readonly RefreshTokenService _refreshTokenService;
-    private readonly IRefreshTokenRepository _refreshTokenRepository;  
-    private readonly IRedisCacheService _redisCache;    
+    private readonly IRefreshTokenRepository _refreshTokenRepository;
+    private readonly IRedisCacheService _redisCache;
     private readonly PasswordValidator _passwordValidator;
     private readonly AccountLockoutService _lockoutService;
 
@@ -40,44 +35,41 @@ public class AuthService
         _emailService = emailService;
         _jwtTokenService = jwtTokenService;
         _refreshTokenService = refreshTokenService;
-        _refreshTokenRepository = refreshTokenRepository; 
+        _refreshTokenRepository = refreshTokenRepository;
         _redisCache = redisCache;
         _passwordValidator = passwordValidator;
         _lockoutService = lockoutService;
     }
 
-    /// <summary>
-    /// Step 1: Register - validates and sends OTP.
-    /// </summary>
-    public async Task<AuthResult> InitiateRegistrationAsync(string email, string password)
+    public async Task<(AuthResult result, string? otp)> InitiateRegistrationAsync(string email, string password)
     {
         if (!IsValidEmail(email))
-            return AuthResult.Failure("Invalid email format.");
+            return (AuthResult.Failure("Invalid email format."), null);
 
         if (await _userRepository.EmailExistsAsync(email))
-            return AuthResult.Failure("Email is already registered.");
+            return (AuthResult.Failure("Email is already registered."), null);
 
         var (isValid, error) = _passwordValidator.Validate(password);
         if (!isValid)
-            return AuthResult.Failure(error!);
+            return (AuthResult.Failure(error!), null);
 
         var otp = await _otpService.GenerateOtpAsync(email, OtpPurpose.Register);
-        await _emailService.SendOtpEmailAsync(email, otp, "Register");
 
-        return AuthResult.Success("Verification code sent to your email.");
+        _ = Task.Run(async () =>
+        {
+            try { await _emailService.SendOtpEmailAsync(email, otp, "Register"); }
+            catch { }
+        });
+
+        return (AuthResult.Success("Verification code sent to your email."), otp);
     }
 
-    /// <summary>
-    /// Step 2: Complete registration after OTP verification.
-    /// </summary>
     public async Task<AuthResult> CompleteRegistrationAsync(string email, string password, string otp, string? ipAddress = null)
     {
-        // Verify OTP
         var otpValid = await _otpService.VerifyOtpAsync(email, otp, OtpPurpose.Register);
         if (!otpValid)
             return AuthResult.Failure("Invalid or expired verification code.");
 
-        // Create user
         var user = new User
         {
             Email = email.ToLower(),
@@ -88,38 +80,39 @@ public class AuthService
 
         var userId = await _userRepository.CreateAsync(user);
 
-        // Generate tokens
         var accessToken = _jwtTokenService.GenerateAccessToken(userId, email);
         var refreshToken = await _refreshTokenService.GenerateRefreshTokenAsync(userId, ipAddress);
 
         return AuthResult.Success("Registration successful!", accessToken, refreshToken);
     }
 
-    /// <summary>
-    /// Step 1: Login - validates credentials and sends OTP.
-    /// </summary>
-    public async Task<AuthResult> InitiateLoginAsync(string email, string password)
+    public async Task<(AuthResult result, string? otp)> InitiateLoginAsync(string email, string password)
     {
         if (await _lockoutService.IsLockedAsync(email))
         {
             var minutes = await _lockoutService.GetRemainingLockoutMinutesAsync(email);
-            return AuthResult.Failure($"Account is locked. Try again in {minutes} minutes.");
+            return (AuthResult.Failure($"Account is locked. Try again in {minutes} minutes."), null);
         }
 
         var user = await _userRepository.GetByEmailAsync(email.ToLower());
         if (user == null)
-            return AuthResult.Failure("Invalid email or password.");
+            return (AuthResult.Failure("Invalid email or password."), null);
 
         if (!_passwordService.VerifyPassword(password, user.PasswordHash))
-            return AuthResult.Failure("Invalid email or password.");
+            return (AuthResult.Failure("Invalid email or password."), null);
 
         if (!user.EmailVerified)
-            return AuthResult.Failure("Email not verified. Please register again.");
+            return (AuthResult.Failure("Email not verified. Please register again."), null);
 
         var otp = await _otpService.GenerateOtpAsync(email, OtpPurpose.Login);
-        await _emailService.SendOtpEmailAsync(email, otp, "Login");
 
-        return AuthResult.Success("Verification code sent to your email.");
+        _ = Task.Run(async () =>
+        {
+            try { await _emailService.SendOtpEmailAsync(email, otp, "Login"); }
+            catch { }
+        });
+
+        return (AuthResult.Success("Verification code sent to your email."), otp);
     }
 
     /// <summary>

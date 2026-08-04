@@ -39,6 +39,14 @@
                 <div class="alert alert-info fade-in text-center">@ViewBag.Message</div>
             }
 
+            @if (ViewBag.DevOtp != null)
+            {
+                <div style="background: var(--bg-input); border: 1px solid var(--border); border-radius: 10px; padding: 1rem; text-align: center; margin-bottom: 1rem;">
+                    <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.5rem;">Your verification code</p>
+                    <code style="font-size: 2rem; font-weight: 700; color: var(--accent); letter-spacing: 10px;">@ViewBag.DevOtp</code>
+                </div>
+            }
+
             @* OTP CARD *@
             <div class="card otp-card">
                 <div class="card-body p-4">
@@ -92,7 +100,13 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             var otpInput = document.querySelector('.otp-input');
-            if (otpInput) otpInput.focus();
+            if (otpInput) {
+                @if (ViewBag.DevOtp != null)
+                    {
+                        <text>otpInput.value = '@ViewBag.DevOtp';</text>
+                }
+                    otpInput.focus();
+            }
         });
     </script>
 }
