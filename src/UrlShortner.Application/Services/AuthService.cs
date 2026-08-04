@@ -55,12 +55,6 @@ public class AuthService
 
         var otp = await _otpService.GenerateOtpAsync(email, OtpPurpose.Register);
 
-        _ = Task.Run(async () =>
-        {
-            try { await _emailService.SendOtpEmailAsync(email, otp, "Register"); }
-            catch { }
-        });
-
         return (AuthResult.Success("Verification code sent to your email."), otp);
     }
 
@@ -105,12 +99,6 @@ public class AuthService
             return (AuthResult.Failure("Email not verified. Please register again."), null);
 
         var otp = await _otpService.GenerateOtpAsync(email, OtpPurpose.Login);
-
-        _ = Task.Run(async () =>
-        {
-            try { await _emailService.SendOtpEmailAsync(email, otp, "Login"); }
-            catch { }
-        });
 
         return (AuthResult.Success("Verification code sent to your email."), otp);
     }
@@ -197,11 +185,6 @@ public class AuthService
 
         // Generate and send OTP
         var otp = await _otpService.GenerateOtpAsync(email, OtpPurpose.ResetPassword);
-        _ = Task.Run(async () =>
-        {
-            try { await _emailService.SendOtpEmailAsync(email, otp, "ResetPassword"); }
-            catch { }
-        });
 
         return AuthResult.Success("If an account exists with this email, a reset code has been sent.");
     }

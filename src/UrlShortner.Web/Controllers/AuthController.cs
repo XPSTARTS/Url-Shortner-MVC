@@ -103,12 +103,12 @@ public class AuthController : Controller
         if (string.IsNullOrEmpty(email))
             return RedirectToAction("Login");
 
-        // Re-store TempData for the POST
         TempData.Keep("Email");
         TempData.Keep("Purpose");
         TempData.Keep("Password");
         TempData.Keep("RememberMe");
         TempData.Keep("ReturnUrl");
+        TempData.Keep("DevOtp");  
 
         var model = new VerifyOtpViewModel
         {
@@ -117,6 +117,7 @@ public class AuthController : Controller
         };
 
         ViewBag.Message = TempData["Message"] as string;
+        ViewBag.DevOtp = TempData["DevOtp"] as string;  
 
         return View(model);
     }
