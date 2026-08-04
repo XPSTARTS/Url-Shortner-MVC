@@ -35,7 +35,7 @@ public class RefreshTokenRepository : IRefreshTokenRepository
         using var connection = _connectionFactory.CreateConnection();
         var pg = IsPostgres(connection);
         var sql = pg
-            ? @"SELECT ""Id"", ""UserId"", ""Token"", ""DeviceInfo"", ""IPAddress"", ""ExpiresAt"", ""IsRevoked"", ""CreatedAt"", ""RevokedAt"" FROM ""RefreshTokens"" WHERE ""Token"" = @Token AND ""IsRevoked"" = 0 AND ""ExpiresAt"" > NOW()"
+            ? @"SELECT ""Id"", ""UserId"", ""Token"", ""DeviceInfo"", ""IPAddress"", ""ExpiresAt"", ""IsRevoked"", ""CreatedAt"", ""RevokedAt"" FROM ""RefreshTokens"" WHERE ""Token"" = @Token AND ""IsRevoked"" = FALSE AND ""ExpiresAt"" > NOW()"
             : @"SELECT Id, UserId, Token, DeviceInfo, IPAddress, ExpiresAt, IsRevoked, CreatedAt, RevokedAt FROM RefreshTokens WHERE Token = @Token AND IsRevoked = 0 AND ExpiresAt > GETUTCDATE()";
 
         return await connection.QuerySingleOrDefaultAsync<RefreshToken>(sql, new { Token = token });
@@ -46,7 +46,7 @@ public class RefreshTokenRepository : IRefreshTokenRepository
         using var connection = _connectionFactory.CreateConnection();
         var pg = IsPostgres(connection);
         var sql = pg
-            ? @"UPDATE ""RefreshTokens"" SET ""IsRevoked"" = 1, ""RevokedAt"" = NOW() WHERE ""Token"" = @Token"
+            ? @"UPDATE ""RefreshTokens"" SET ""IsRevoked"" = TRUE, ""RevokedAt"" = NOW() WHERE ""Token"" = @Token"
             : @"UPDATE RefreshTokens SET IsRevoked = 1, RevokedAt = GETUTCDATE() WHERE Token = @Token";
 
         var rowsAffected = await connection.ExecuteAsync(sql, new { Token = token });
@@ -58,7 +58,7 @@ public class RefreshTokenRepository : IRefreshTokenRepository
         using var connection = _connectionFactory.CreateConnection();
         var pg = IsPostgres(connection);
         var sql = pg
-            ? @"UPDATE ""RefreshTokens"" SET ""IsRevoked"" = 1, ""RevokedAt"" = NOW() WHERE ""UserId"" = @UserId AND ""IsRevoked"" = 0"
+            ? @"UPDATE ""RefreshTokens"" SET ""IsRevoked"" = TRUE, ""RevokedAt"" = NOW() WHERE ""UserId"" = @UserId AND ""IsRevoked"" = FALSE"
             : @"UPDATE RefreshTokens SET IsRevoked = 1, RevokedAt = GETUTCDATE() WHERE UserId = @UserId AND IsRevoked = 0";
 
         var rowsAffected = await connection.ExecuteAsync(sql, new { UserId = userId });
@@ -70,7 +70,7 @@ public class RefreshTokenRepository : IRefreshTokenRepository
         using var connection = _connectionFactory.CreateConnection();
         var pg = IsPostgres(connection);
         var sql = pg
-            ? @"SELECT COUNT(1) FROM ""RefreshTokens"" WHERE ""Token"" = @Token AND ""IsRevoked"" = 0 AND ""ExpiresAt"" > NOW()"
+            ? @"SELECT COUNT(1) FROM ""RefreshTokens"" WHERE ""Token"" = @Token AND ""IsRevoked"" = FALSE AND ""ExpiresAt"" > NOW()"
             : @"SELECT COUNT(1) FROM RefreshTokens WHERE Token = @Token AND IsRevoked = 0 AND ExpiresAt > GETUTCDATE()";
 
         var count = await connection.ExecuteScalarAsync<int>(sql, new { Token = token });

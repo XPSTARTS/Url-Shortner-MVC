@@ -1,4 +1,6 @@
 ﻿// src/UrlShortner.Application/Services/EmailService.cs
+using System;
+using System.IO;
 using MailKit.Net.Smtp;
 using MailKit.Security;
 using Microsoft.Extensions.Configuration;
@@ -40,17 +42,15 @@ public class EmailService
     <small style='color: #999;'>This is an automated message from URL Shortner.</small>
 </div>";
 
-        // Check if SMTP is configured
-        var smtpHost = _configuration["EmailSettings:SmtpHost"];
+        var smtpHost = Environment.GetEnvironmentVariable("SMTP_HOST")
+            ?? _configuration["EmailSettings:SmtpHost"];
 
         if (string.IsNullOrEmpty(smtpHost))
         {
-            // DEV MODE: Save OTP to file and log to console
             await SaveOtpToDevFileAsync(toEmail, otp, purpose, subject);
             return;
         }
 
-        // PRODUCTION MODE: Send real email
         await SendRealEmailAsync(toEmail, subject, body);
     }
 
@@ -79,7 +79,6 @@ Your OTP Code: {otp}
 
         await File.WriteAllTextAsync(filePath, content);
 
-        // Also print to console in a visible way
         Console.WriteLine("");
         Console.WriteLine("╔══════════════════════════════════════════╗");
         Console.WriteLine("║     📧 DEV MODE - OTP Generated          ║");
@@ -94,36 +93,31 @@ Your OTP Code: {otp}
         _logger?.LogInformation("DEV MODE: OTP for {Email} saved to {FilePath}", toEmail, filePath);
     }
 
-    /// <summary>
-    /// Production mode: Send email via SMTP.
-    /// </summary>
     private async Task SendRealEmailAsync(string toEmail, string subject, string htmlBody)
     {
-        var emailSettings = _configuration.GetSection("EmailSettings");
-
-        var fromName = emailSettings["FromName"] ?? "URL Shortner";
-        var fromEmail = emailSettings["FromEmail"] ?? "noreply@urlshortner.com";
+        var smtpHost = Environment.GetEnvironmentVariable("SMTP_HOST")
+            ?? _configuration["EmailSettings:SmtpHost"]!;
+        var smtpPort = int.Parse(Environment.GetEnvironmentVariable("SMTP_PORT")
+            ?? _configuration["EmailSettings:SmtpPort"] ?? "587");
+        var username = Environment.GetEnvironmentVariable("SMTP_USERNAME")
+            ?? _configuration["EmailSettings:SmtpUsername"];
+        var password = Environment.GetEnvironmentVariable("SMTP_PASSWORD")
+            ?? _configuration["EmailSettings:SmtpPassword"];
+        var fromName = Environment.GetEnvironmentVariable("SMTP_FROM_NAME")
+            ?? _configuration["EmailSettings:FromName"] ?? "URL Shortner";
+        var fromEmail = Environment.GetEnvironmentVariable("SMTP_FROM_EMAIL")
+            ?? _configuration["EmailSettings:FromEmail"] ?? "noreply@urlshortner.com";
 
         var message = new MimeMessage();
         message.From.Add(new MailboxAddress(fromName, fromEmail));
         message.To.Add(new MailboxAddress(toEmail, toEmail));
         message.Subject = subject;
 
-        var bodyBuilder = new BodyBuilder
-        {
-            HtmlBody = htmlBody
-        };
+        var bodyBuilder = new BodyBuilder { HtmlBody = htmlBody };
         message.Body = bodyBuilder.ToMessageBody();
 
         using var client = new SmtpClient();
-
-        var smtpHost = emailSettings["SmtpHost"]!;
-        var smtpPort = int.Parse(emailSettings["SmtpPort"] ?? "587");
-
         await client.ConnectAsync(smtpHost, smtpPort, SecureSocketOptions.StartTls);
-
-        var username = emailSettings["SmtpUsername"];
-        var password = emailSettings["SmtpPassword"];
 
         if (!string.IsNullOrEmpty(username) && !string.IsNullOrEmpty(password))
         {
